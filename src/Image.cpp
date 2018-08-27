@@ -1,4 +1,5 @@
 #include "../include/Image.h"
+#include <vector>
 
 #ifndef STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -20,14 +21,33 @@ Image::~Image(){
 }
 
 void Image::setAsRead(std::string inFileName){
+
 	if(mode != NONE){
 		std::cerr << "Image mode already set, can't be changed" << std::endl;
 		return;
 	}
 	mode = READ;
+
 	//read in the file here
+	int numChannels = -1;
+	unsigned char* data;
+	data = stbi_load(inFileName.c_str(), &width, &height, &numChannels, STBI_rgb);
+	if (numChannels == -1) {
+		std::cerr << "Image name " << inFileName << " not found" << std::endl;
+		return;
+	}
+	pixels = new Color[height * width];
+	
+	//parse here
+	for(int i = 0; i < width * height; ++i){ 
+		Color* currPixel = &pixels[i];
 
+		currPixel->red = data[i * 3 + 0];
+		currPixel->green = data[i * 3 + 1];
+		currPixel->blue = data[i * 3 + 2];
 
+	}
+	stbi_image_free(data);
 
 }
 void Image::setAsWrite(int image_width, int image_height){
@@ -56,24 +76,23 @@ void Image::setPixel(int x_coord, int y_coord, float r, float g, float b){
 
 
 }
-void Image::exportPPM(std::string image_name){
+void Image::exportPNG(std::string image_name){
 
+	//error check
 	if(mode != WRITE){
 		std::cerr << "Image must be in WRITE mode to exportPPM" << std::endl;
 		return;
 	}
 
-	std::ofstream out(image_name.c_str());
-  	out << "P3\n" << width << ' ' << height << ' ' << "255\n";
-
-  	for (int y = 0; y < height; ++y) {
-    	for (int x = 0; x < width; ++x) {
-    		Color currPixel = pixels[y * height + x];
-    		out << currPixel.red << ' ' << currPixel.green << ' ' << currPixel.blue << '\n';
-    	}
-
-    }
-    out.close();
+	//export png
+	std::vector<unsigned char> data;
+    for(int i = 0; i < width * height; ++i){ 
+		Color currPixel = pixels[i];
+		data.push_back((unsigned char)currPixel.red);
+		data.push_back((unsigned char)currPixel.green);
+		data.push_back((unsigned char)currPixel.blue);
+	}
+    stbi_write_png(image_name.c_str(), width, height, 3, data.data(), width * 3);
 }
 
 int Image::getMode(){

@@ -25,6 +25,7 @@ void renderRow(int yVal, Model& model, Image& image);
 int main(void){
   	
 	
+	
   	Model model("ObjModels/Cube.obj");
   	Image outputFile;
   	outputFile.setAsWrite(Width, Height);
@@ -38,7 +39,8 @@ int main(void){
   		threads[i].join();
   	}
 
-  	outputFile.exportPPM("RenderedImage.ppm");
+  	outputFile.exportPNG("RenderedImage.png");
+  	
 	return 0;
 }
 
@@ -82,6 +84,7 @@ void renderRow(int yVal, Model& model, Image& image){
 			image.setPixel(x,yVal, red, green, blue);
   		}else{
 
+  			//no ray intersection, set to background color
   			image.setPixel(x,yVal ,1,1,1);
   		}
 	}

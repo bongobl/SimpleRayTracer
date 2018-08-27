@@ -33,7 +33,7 @@ public:
 	void setAsWrite(int image_width, int image_height);
 
 	void setPixel(int x_coord, int y_coord, float r, float g, float b);
-	void exportPPM(std::string image_name);
+	void exportPNG(std::string image_name);
 	int getMode();
 
 	Vec3 sample(float u, float v);
