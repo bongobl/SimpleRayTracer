@@ -4,6 +4,7 @@ project(SimpleRayTracer)
 
 include("external/stb.cmake")
 include("external/tinyobjloader.cmake")
+include("external/glm.cmake")
 
 set(INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/include/")
 set(INCLUDE_FILES
@@ -19,6 +20,7 @@ set(INCLUDE_DIRECTORIES
     "${INCLUDE_DIRECTORY}"
     "${STB_INCLUDE_DIRECTORY}"
     "${TINYOBJLOADER_INCLUDE_DIRECTORY}"
+    "${GLM_INCLUDE_DIRECTORY}"
 )
 
 

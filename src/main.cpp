@@ -4,12 +4,17 @@
 #include <iostream>
 #include <thread>
 #include <vector>
+
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "../include/Vec3.h"
 #include "../include/Vertex.h"
 #include "../include/Triangle.h"
 #include "../include/Ray.h"
 #include "../include/Model.h"
 #include "../include/Image.h"
+
 
 using namespace std;
 
@@ -24,7 +29,7 @@ void renderRow(int yVal, Model& model, Image& image);
 
 int main(void){
   	
-	
+  	glm::vec3 myGLMVector(8,7,5);
 	
   	Model model("ObjModels/Cube.obj");
   	Image outputFile;
