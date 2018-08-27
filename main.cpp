@@ -23,7 +23,8 @@ int main(void){
   	
 	
   	Model model("ObjModels/Cube.obj");
-  	Image outputFile(Width, Height);
+  	Image outputFile;
+  	outputFile.setAsWrite(Width, Height);
 
   	cout << "Rendering Image" << endl;
   	std::vector<std::thread> threads;

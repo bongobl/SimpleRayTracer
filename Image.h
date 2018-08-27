@@ -4,6 +4,7 @@
 #include <fstream>
 using namespace std;
 struct Color{
+
 	int red;
 	int green;
 	int blue;
@@ -16,13 +17,22 @@ class Image{
 	int width;
 	int height;
 	Color* pixels;
+	int mode;
+	
 
 
 public:
-	Image(int image_width, int image_height);
+	Image();
 	~Image();
+
+	void setAsRead(std::string inFileName);
+	void setAsWrite(int image_width, int image_height);
+
 	void setPixel(int x_coord, int y_coord, float r, float g, float b);
 	void exportPPM(std::string image_name);
+	int getMode();
+
+	enum IOMode {NONE, READ, WRITE};
 
 private:
 	static int toColorValue(float value);
