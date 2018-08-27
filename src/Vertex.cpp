@@ -1,4 +1,4 @@
-#include "Vertex.h"
+#include "../include/Vertex.h"
 
 Vertex::Vertex() : position(Vec3()), normal(Vec3(0,0,1)) {
 	

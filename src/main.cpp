@@ -1,14 +1,16 @@
 #define 	PI 		3.14159265358f
+#include <cmath>
+#include <algorithm>
 #include <iostream>
 #include <thread>
 #include <vector>
-#include "Vec3.h"
-#include "Vertex.h"
-#include "Triangle.h"
-#include "Ray.h"
-#include "Model.h"
-#include "cmath"
-#include "Image.h"
+#include "../include/Vec3.h"
+#include "../include/Vertex.h"
+#include "../include/Triangle.h"
+#include "../include/Ray.h"
+#include "../include/Model.h"
+#include "../include/Image.h"
+
 using namespace std;
 
 
@@ -16,8 +18,9 @@ const int Width = 1000;
 const int Height = 1000;
 const int NUM_THREADS = 60;
 
-void renderRow(int yVal, Model& model, Image& image);
 void threadTask(int startRow, Model& model, Image& image);
+void renderRow(int yVal, Model& model, Image& image);
+
 
 int main(void){
   	
@@ -35,7 +38,7 @@ int main(void){
   		threads[i].join();
   	}
 
-  	outputFile.exportPPM("out.ppm");
+  	outputFile.exportPPM("RenderedImage.ppm");
 	return 0;
 }
 
@@ -52,7 +55,7 @@ void renderRow(int yVal, Model& model, Image& image){
 
 	for (int x = 0; x < Width; ++x) {
 		//Ray ray(Vec3( 0.5f * (x - 520),0.5f * ((Height - yVal) - 500),5000), Vec3(0,0,-1));		//orthographic
-		Ray ray(Vec3(-40,0, 600), Vec3( x - 500, (Height - yVal) - 500, -1000));				//perspective
+		Ray ray(Vec3(-40.0f,0.0f, 600.0f), Vec3( x - 500.0f, (Height - yVal) - 500.0f, -1000.0f));				//perspective
 
 		if(ray.intersectModel(model, fragPosition, fragNormal)){
 			
@@ -70,10 +73,12 @@ void renderRow(int yVal, Model& model, Image& image){
 			//calculate ambient
 			float ambientAdder = 0.01f;
 
+			//combine components
 			float red = specularAdder + ambientAdder;
-			float green = diffuseFactor + specularAdder + ambientAdder;
-			float blue = specularAdder + ambientAdder;
+			float green = specularAdder + ambientAdder;
+			float blue = diffuseFactor + specularAdder + ambientAdder;
 
+			//set image pixel value
 			image.setPixel(x,yVal, red, green, blue);
   		}else{
 

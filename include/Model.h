@@ -11,5 +11,5 @@ class Model{
 public:
 	Model(string model_filename);
 
-	friend class Ray;
+	friend struct Ray;
 };

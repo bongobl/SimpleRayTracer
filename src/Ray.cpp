@@ -1,5 +1,5 @@
 #define EDGE_BIAS 0.006	//when hitpoint on edge or point
-#include "Ray.h"
+#include "../include/Ray.h"
 
 Ray::Ray(Vec3 origin_, Vec3 direction_) : origin(origin_), direction(direction_) {
 

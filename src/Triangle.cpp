@@ -1,4 +1,4 @@
-#include "Triangle.h"
+#include "../include/Triangle.h"
 
 Triangle::Triangle(Vertex v1_, Vertex v2_, Vertex v3_){
 	v1 = v1_;

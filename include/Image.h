@@ -2,7 +2,11 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include "../include/Vec3.h"
 using namespace std;
+
+//Used to store RGB values for image to be written
+//Use Vec3 instead for all in-app purposes
 struct Color{
 
 	int red;
@@ -32,8 +36,11 @@ public:
 	void exportPPM(std::string image_name);
 	int getMode();
 
+	Vec3 sample(float u, float v);
+
 	enum IOMode {NONE, READ, WRITE};
 
 private:
 	static int toColorValue(float value);
+	static float toSampleValue(int colorValue);
 };

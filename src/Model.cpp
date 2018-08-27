@@ -1,5 +1,6 @@
-#include "Model.h"
 #include <cstdlib>
+#include "../include/Model.h"
+
 
 Model::Model(string model_filename){
 	FILE* fp;
