@@ -1,19 +1,21 @@
 #pragma once
-#include "Vec3.h"
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 struct Vertex{
 
-	Vec3 position;
+	glm::vec3 position;
+	glm::vec2 texCoord;
 private:
-	Vec3 normal;	//must keep normal private to make sure it is of unit length
+	glm::vec3 normal;	//must keep normal private to make sure it is of unit length
 public: 
 	
 	Vertex();
-	Vertex(Vec3 pos, Vec3 norm);
+	Vertex(glm::vec3 pos, glm::vec2 uvTexCoord, glm::vec3 norm);
 	Vertex(const Vertex& other);
 	~Vertex();
 
-	void setNormal(const Vec3& n);
-	Vec3 getNormal() const;
+	void setNormal(const glm::vec3& n);
+	glm::vec3 getNormal() const;
 
 	Vertex& operator=(const Vertex& other);
 

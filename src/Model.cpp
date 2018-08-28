@@ -25,16 +25,22 @@ Model::Model(string model_filename){
 		//Process Vertex Attributes
 		if (currLine[0] == 'v') {
 
-			//read vertex normal
+			//read vertex normal (normals are read first, so only push back vector here)
 			if (currLine[1] == 'n' && currLine[2] == ' ') {
 				sscanf(currLine, "vn %f %f %f", &x, &y, &z);
-				vertices.push_back( Vertex(Vec3(0,0,0), Vec3(x,y,z)) );
+				vertices.push_back( Vertex(glm::vec3(0,0,0), glm::vec2(0,0), glm::vec3(x,y,z)) );
 			}
 
+			//read in texCoords
+			else if (currLine[1] == 't' && currLine[2] == ' ') {
+				sscanf(currLine, "vt %f %f", &x, &y);
+				vertices.back().texCoord = glm::vec2(x, y);
+				//cout << vertices.back().texCoord.x << "    " << vertices.back().texCoord.y << endl;
+			}
 			//read vertex position
 			else if (currLine[1] == ' ') {
 				sscanf(currLine, "v %f %f %f", &x, &y, &z);
-				vertices.back().position = Vec3(x,y,z);
+				vertices.back().position = glm::vec3(x,y,z);
 			}	
 		}
 
@@ -47,6 +53,7 @@ Model::Model(string model_filename){
 
 	}//END WHILE
 	
+
 	//debug
 	cout << "Loaded Model " << model_filename << " with " << vertices.size() << " vertices and " << faces.size() << " faces" << endl;
 

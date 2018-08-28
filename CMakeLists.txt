@@ -12,7 +12,6 @@ set(INCLUDE_FILES
 	"${INCLUDE_DIRECTORY}/Model.h"
 	"${INCLUDE_DIRECTORY}/Ray.h"
 	"${INCLUDE_DIRECTORY}/Triangle.h"
-	"${INCLUDE_DIRECTORY}/Vec3.h"
 	"${INCLUDE_DIRECTORY}/Vertex.h"
 )
 
@@ -31,7 +30,6 @@ set(SOURCE_FILES
 	"${SOURCE_DIRECTORY}/Model.cpp"
 	"${SOURCE_DIRECTORY}/Ray.cpp"
 	"${SOURCE_DIRECTORY}/Triangle.cpp"
-	"${SOURCE_DIRECTORY}/Vec3.cpp"
 	"${SOURCE_DIRECTORY}/Vertex.cpp"
 )
 

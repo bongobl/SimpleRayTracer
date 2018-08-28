@@ -2,7 +2,10 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include "../include/Vec3.h"
+
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 using namespace std;
 
 //Used to store RGB values for image to be written
@@ -36,7 +39,7 @@ public:
 	void exportPNG(std::string image_name);
 	int getMode();
 
-	Vec3 sample(float u, float v);
+	glm::vec3 sample(glm::vec2 param) const;
 
 	enum IOMode {NONE, READ, WRITE};
 

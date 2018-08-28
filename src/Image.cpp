@@ -99,28 +99,28 @@ int Image::getMode(){
 	return mode;
 }
 
-Vec3 Image::sample(float u, float v){
+glm::vec3 Image::sample(glm::vec2 param) const{
 
 
 	//error checking
 	if(mode == NONE){
 		std::cerr << "Image must be initialized as READ or WRITE before it can be used" << std::endl;
 	}
-	if(u < 0 || u > 1 || v < 0 || v > 1){
+	if(param.x < 0 || param.x > 1 || param.y < 0 || param.y > 1){
 		std::cerr << "UV coords must be in range 0 - 1 inclusive" << std::endl;
 	}
 
-	int x_coord = (int)(u * width);
-	int y_coord = (int)((1 - v) * height);
+	int x_coord = (int)(param.x * width);
+	int y_coord = (int)((1 - param.y) * height);
 
 	
 	//DO PARAMETER ERROR CHECKING HERE
 	if(x_coord >= width || y_coord >= height || x_coord < 0 || y_coord < 0){
-		return Vec3(0,0,0);
+		return glm::vec3(0,0,0);
 	}
 
 	Color pixel = pixels[y_coord * height + x_coord];
-	return Vec3(toSampleValue(pixel.red), toSampleValue(pixel.green), toSampleValue(pixel.blue));
+	return glm::vec3(toSampleValue(pixel.red), toSampleValue(pixel.green), toSampleValue(pixel.blue));
 
 }
 //private helpers

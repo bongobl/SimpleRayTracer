@@ -1,17 +1,20 @@
 #pragma once
-#include "Vec3.h"
+
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "Triangle.h"
 #include "Model.h"
 struct Ray{
 
-	Vec3 origin;
+	glm::vec3 origin;
 private:
-	Vec3 direction;	
+	glm::vec3 direction;	
 public:
 
-	Ray(Vec3 origin_, Vec3 direction_);
+	Ray(glm::vec3 origin_, glm::vec3 direction_);
 	~Ray();
 
-	bool intersectModel(const Model& model, Vec3& fragPosition, Vec3& fragNormal) const;
-	bool intersectTriangle(const Triangle& triangle, Vec3& intersection) const;
+	bool intersectModel(const Model& model, glm::vec3& fragPosition, glm::vec2& fragTexCoord, glm::vec3& fragNormal) const;
+	bool intersectTriangle(const Triangle& triangle, glm::vec3& intersection) const;
 };

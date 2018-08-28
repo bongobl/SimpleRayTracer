@@ -8,19 +8,33 @@ Triangle::Triangle(Vertex v1_, Vertex v2_, Vertex v3_){
 Triangle::~Triangle(){
 
 }
-Vec3 Triangle::getFaceNormal() const{
-	return Vec3::normalize(Vec3::cross(v2.position - v1.position, v3.position - v1.position));
+glm::vec3 Triangle::getFaceNormal() const{
+	return glm::normalize(glm::cross(v2.position - v1.position, v3.position - v1.position));
 }
 
-Vec3 Triangle::interpNormal(Vec3 sample) const{
+glm::vec3 Triangle::interpNormal(glm::vec3 sample) const{
 	
-	Vec3 faceNormal = getFaceNormal();
-	float denominator = Vec3::dot(faceNormal, Vec3::cross(v2.position - v1.position, v3.position - v1.position));
+	glm::vec3 faceNormal = getFaceNormal();
+	float denominator = glm::dot(faceNormal, glm::cross(v2.position - v1.position, v3.position - v1.position));
 
 
-	float weightV1 = Vec3::dot(faceNormal, Vec3::cross(v3.position - v2.position, sample - v2.position)) / denominator;
-	float weightV2 = Vec3::dot(faceNormal, Vec3::cross(v1.position - v3.position, sample - v3.position)) / denominator;
-	float weightV3 = Vec3::dot(faceNormal, Vec3::cross(v2.position - v1.position, sample - v1.position)) / denominator;
+	float weightV1 = glm::dot(faceNormal, glm::cross(v3.position - v2.position, sample - v2.position)) / denominator;
+	float weightV2 = glm::dot(faceNormal, glm::cross(v1.position - v3.position, sample - v3.position)) / denominator;
+	float weightV3 = glm::dot(faceNormal, glm::cross(v2.position - v1.position, sample - v1.position)) / denominator;
 
-	return Vec3::normalize(weightV1 * v1.getNormal() + weightV2 * v2.getNormal() + weightV3 * v3.getNormal());
+	return glm::normalize(weightV1 * v1.getNormal() + weightV2 * v2.getNormal() + weightV3 * v3.getNormal());
+}
+
+
+glm::vec2 Triangle::interpTexCoord(glm::vec3 sample) const {
+
+	glm::vec3 faceNormal = getFaceNormal();
+	float denominator = glm::dot(faceNormal, glm::cross(v2.position - v1.position, v3.position - v1.position));
+
+
+	float weightV1 = glm::dot(faceNormal, glm::cross(v3.position - v2.position, sample - v2.position)) / denominator;
+	float weightV2 = glm::dot(faceNormal, glm::cross(v1.position - v3.position, sample - v3.position)) / denominator;
+	float weightV3 = glm::dot(faceNormal, glm::cross(v2.position - v1.position, sample - v1.position)) / denominator;
+
+	return glm::normalize(weightV1 * v1.texCoord + weightV2 * v2.texCoord + weightV3 * v3.texCoord);
 }
