@@ -60,7 +60,7 @@ void Image::setAsWrite(int image_width, int image_height){
 	height = image_height;
 	pixels = new Color[height * width];
 }
-void Image::setPixel(int x_coord, int y_coord, float r, float g, float b){
+void Image::setPixel(int x_coord, int y_coord, glm::vec3 color){
 	
 	if(mode != WRITE){
 		std::cerr << "Image must be in WRITE mode to set pixel" << std::endl;
@@ -72,7 +72,7 @@ void Image::setPixel(int x_coord, int y_coord, float r, float g, float b){
 	}
 	
 	//perform function
-	pixels[y_coord * width + x_coord] = Color(toColorValue(r), toColorValue(g), toColorValue(b));
+	pixels[y_coord * width + x_coord] = Color(toColorValue(color.r), toColorValue(color.g), toColorValue(color.b));
 
 
 }

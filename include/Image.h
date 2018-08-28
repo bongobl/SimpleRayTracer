@@ -35,7 +35,7 @@ public:
 	void setAsRead(std::string inFileName);
 	void setAsWrite(int image_width, int image_height);
 
-	void setPixel(int x_coord, int y_coord, float r, float g, float b);
+	void setPixel(int x_coord, int y_coord, glm::vec3 color);
 	void exportPNG(std::string image_name);
 	int getMode();
 

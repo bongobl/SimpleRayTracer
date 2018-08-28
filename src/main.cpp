@@ -29,8 +29,8 @@ Image rockTexture;
 
 int main(void){
   	
-	rockTexture.setAsRead("rock.jpg");
-  	Model model("ObjModels/cube.obj");
+	rockTexture.setAsRead("resources/textures/rock.jpg");
+  	Model model("resources/ObjModels/cube.obj");
   	Image outputFile;
   	outputFile.setAsWrite(Width, Height);
 
@@ -81,23 +81,23 @@ void renderRow(int yVal, Model& model, Image& image){
 			float ambientAdder = 0.01f;
 
 			//combine components
-			/*
-			float red = specularAdder + ambientAdder;
-			float green = specularAdder + ambientAdder;
+			
+			float red = diffuseFactor + specularAdder + ambientAdder;
+			float green = diffuseFactor + specularAdder + ambientAdder;
 			float blue = diffuseFactor + specularAdder + ambientAdder;
 			//set image pixel value
-			image.setPixel(x, yVal, red, green, blue);
-			*/
+			image.setPixel(x, yVal, glm::vec3(red, green, blue) * rockTexture.sample(fragTexCoord));
+			
 
 			
-			glm::vec3 finalColor = rockTexture.sample(fragTexCoord);
+			//glm::vec3 finalColor = rockTexture.sample(fragTexCoord);
 			//set image pixel value
-			image.setPixel(x,yVal, finalColor.x, finalColor.y, finalColor.z);
+			//image.setPixel(x,yVal, finalColor.x, finalColor.y, finalColor.z);
 			
   		}else{
 
   			//no ray intersection, set to background color
-  			image.setPixel(x,yVal ,1,1,1);
+  			image.setPixel(x,yVal ,glm::vec3(1,1,1));
   		}
 	}
 }
