@@ -81,17 +81,19 @@ void renderRow(int yVal, Model& model, Image& image){
 			float ambientAdder = 0.01f;
 
 			//combine components
+			/*
 			float red = specularAdder + ambientAdder;
 			float green = specularAdder + ambientAdder;
 			float blue = diffuseFactor + specularAdder + ambientAdder;
 			//set image pixel value
 			image.setPixel(x, yVal, red, green, blue);
+			*/
 
-			/*
+			
 			glm::vec3 finalColor = rockTexture.sample(fragTexCoord);
 			//set image pixel value
 			image.setPixel(x,yVal, finalColor.x, finalColor.y, finalColor.z);
-			*/
+			
   		}else{
 
   			//no ray intersection, set to background color

@@ -36,5 +36,5 @@ glm::vec2 Triangle::interpTexCoord(glm::vec3 sample) const {
 	float weightV2 = glm::dot(faceNormal, glm::cross(v1.position - v3.position, sample - v3.position)) / denominator;
 	float weightV3 = glm::dot(faceNormal, glm::cross(v2.position - v1.position, sample - v1.position)) / denominator;
 
-	return glm::normalize(weightV1 * v1.texCoord + weightV2 * v2.texCoord + weightV3 * v3.texCoord);
+	return weightV1 * v1.texCoord + weightV2 * v2.texCoord + weightV3 * v3.texCoord;
 }

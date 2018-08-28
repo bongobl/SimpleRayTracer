@@ -72,7 +72,7 @@ void Image::setPixel(int x_coord, int y_coord, float r, float g, float b){
 	}
 	
 	//perform function
-	pixels[y_coord * height + x_coord] = Color(toColorValue(r), toColorValue(g), toColorValue(b));
+	pixels[y_coord * width + x_coord] = Color(toColorValue(r), toColorValue(g), toColorValue(b));
 
 
 }
@@ -119,7 +119,7 @@ glm::vec3 Image::sample(glm::vec2 param) const{
 		return glm::vec3(0,0,0);
 	}
 
-	Color pixel = pixels[y_coord * height + x_coord];
+	Color pixel = pixels[y_coord * width + x_coord];
 	return glm::vec3(toSampleValue(pixel.red), toSampleValue(pixel.green), toSampleValue(pixel.blue));
 
 }
