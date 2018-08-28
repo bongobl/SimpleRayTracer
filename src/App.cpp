@@ -80,7 +80,7 @@ void App::renderRow(int yVal){
 			//calculate specular
 			glm::vec3 reflection = glm::reflect(directionalLight, fragNormal);
 			glm::vec3 toEye = glm::normalize(ray.origin - fragPosition);
-			glm::vec3 specularComponent = pow(max(glm::dot(reflection, toEye), 0.0f), 20) * simpleModel.material.specular;
+			glm::vec3 specularComponent = (float)pow(max(glm::dot(reflection, toEye), 0.0f), 20) * simpleModel.material.specular;
 
 			//calculate ambient
 			glm::vec3 ambientComponent = simpleModel.material.ambient;
