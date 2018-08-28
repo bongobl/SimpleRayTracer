@@ -116,8 +116,8 @@ glm::vec3 Image::sample(glm::vec2 param) const{
 
 	//error checking
 	if(mode == NONE){
-		std::cerr << "Image: Image must be initialized as READ or WRITE before it can be used" << std::endl;
-		return glm::vec3(0,0,0);
+		//std::cerr << "Image: Image must be initialized as READ or WRITE before it can be used" << std::endl;
+		return glm::vec3(1,1,1);
 	}
 
 	//bounds checking

@@ -20,6 +20,7 @@ void App::init() {
 	Material basicMaterial;
 	basicMaterial.specular = glm::vec3(6, 6, 6);
 	basicMaterial.surfaceTexture = rockTexture;
+	basicMaterial.surfaceTextureStrength = 0.0f;
 
 	//assign material to model
 	simpleModel.material = basicMaterial;
@@ -60,8 +61,6 @@ void App::exportImage(std::string outputFileName) {
 }
 
 
-
-
 //Private Helpers
 void App::threadTask(int startRow){
 	for (int currRow = startRow; currRow < OUTPUT_HEIGHT; currRow += NUM_THREADS) {
@@ -93,7 +92,13 @@ void App::renderRow(int yVal){
 			glm::vec3 directionalLight = glm::normalize(glm::vec3(1, -1, -1));
 
 			//sample surface texture
-			glm::vec3 surfaceTexture = simpleModel.material.surfaceTexture.sample(fragTexCoord);
+			glm::vec3 surfaceTextureColor = glm::vec3(1, 1, 1) - (simpleModel.material.surfaceTextureStrength *
+				(glm::vec3(1, 1, 1) - simpleModel.material.surfaceTexture.sample(fragTexCoord)));
+
+			//sample cube map
+			glm::vec3 cubeMapSampler = glm::reflect(ray.direction, fragNormal);
+			glm::vec3 environmentColor =  glm::vec3(1,1,1) - (simpleModel.material.envReflectionStrength * 
+											(glm::vec3(1,1,1)  - environmentMap.sample(cubeMapSampler)));
 
 			//calculate diffuse
 			glm::vec3 diffuseComponent = glm::dot(fragNormal, -1.0f * directionalLight) * simpleModel.material.diffuse;
@@ -107,9 +112,7 @@ void App::renderRow(int yVal){
 			glm::vec3 ambientComponent = simpleModel.material.ambient;
 
 			//combine components			
-			glm::vec3 finalColor = surfaceTexture * (diffuseComponent + specularComponent + ambientComponent);
-
-			finalColor = environmentMap.sample(fragPosition);
+			glm::vec3 finalColor = environmentColor * surfaceTextureColor * (diffuseComponent + specularComponent + ambientComponent);
 
 			//set image pixel value
 			outputImage.setPixel(x, yVal, finalColor);
@@ -121,4 +124,4 @@ void App::renderRow(int yVal){
 			outputImage.setPixel(x, yVal, glm::vec3(1, 1, 1));
 		}
 	}
-}	
+}//End render row	
