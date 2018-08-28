@@ -39,9 +39,14 @@ void App::renderToImage(){
 
 void App::exportImage(std::string outputFileName) {
 
-	cout << "Exporting Image" << endl;
+	cout << "Exporting Image " << outputFileName << " to disk" << endl;
 	outputImage.exportPNG(outputFileName);
 }
+
+
+
+
+//Private Helpers
 void App::threadTask(int startRow){
 	for (int currRow = startRow; currRow < OUTPUT_HEIGHT; currRow += NUM_THREADS) {
 		renderRow(currRow);

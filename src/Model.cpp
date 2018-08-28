@@ -3,6 +3,13 @@
 
 
 Model::Model(string model_filename){
+
+	//Transform (not used yet)
+	position = glm::vec3(0,0,0);
+	orientation = glm::mat4(1.0f);
+	scale = glm::vec3(0,0,0);
+
+	//Load Mesh
 	FILE* fp;
 	char currLine[BUFSIZ];
 	float x, y, z;

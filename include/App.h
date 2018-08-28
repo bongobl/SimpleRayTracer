@@ -10,6 +10,8 @@
 #include "../include/Ray.h"
 #include "../include/Model.h"
 #include "../include/Image.h"
+#include "../include/CubeMap.h"
+
 
 const int OUTPUT_WIDTH = 1000;
 const int OUTPUT_HEIGHT = 1000;

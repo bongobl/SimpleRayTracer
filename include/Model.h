@@ -13,7 +13,14 @@
 using namespace std;
 class Model{
 
+	//Transform (not used yet)
+	glm::vec3 position;
+	glm::mat4 orientation;
+	glm::vec3 scale;
+
+	//Mesh
 	vector<Triangle> faces;
+
 public:
 	Material material;
 	Model(string model_filename);
