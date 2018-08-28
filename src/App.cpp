@@ -9,6 +9,13 @@ void App::init() {
 	//create surface texture
 	rockTexture.setAsRead("resources/textures/rock.jpg");
 
+	environmentMap.rightFace.setAsRead("resources/textures/CubeMap/right.ppm");
+	environmentMap.leftFace.setAsRead("resources/textures/CubeMap/left.ppm");
+	environmentMap.topFace.setAsRead("resources/textures/CubeMap/top.ppm");
+	environmentMap.bottomFace.setAsRead("resources/textures/CubeMap/bottom.ppm");
+	environmentMap.frontFace.setAsRead("resources/textures/CubeMap/front.ppm");
+	environmentMap.backFace.setAsRead("resources/textures/CubeMap/back.ppm");
+
 	//create material
 	Material basicMaterial;
 	basicMaterial.specular = glm::vec3(6, 6, 6);
@@ -22,6 +29,15 @@ void App::init() {
 }
 
 void App::dispose() {
+
+	//clean up CubeMap
+	environmentMap.rightFace.dispose();
+	environmentMap.leftFace.dispose();
+	environmentMap.topFace.dispose();
+	environmentMap.bottomFace.dispose();
+	environmentMap.frontFace.dispose();
+	environmentMap.backFace.dispose();
+
 	rockTexture.dispose();
 	outputImage.dispose();
 }
@@ -91,10 +107,12 @@ void App::renderRow(int yVal){
 			glm::vec3 ambientComponent = simpleModel.material.ambient;
 
 			//combine components			
-			glm::vec3 finalColor = diffuseComponent + specularComponent + ambientComponent;
+			glm::vec3 finalColor = surfaceTexture * (diffuseComponent + specularComponent + ambientComponent);
+
+			finalColor = environmentMap.sample(fragPosition);
 
 			//set image pixel value
-			outputImage.setPixel(x, yVal, finalColor * surfaceTexture);
+			outputImage.setPixel(x, yVal, finalColor);
 
 		}
 		else {

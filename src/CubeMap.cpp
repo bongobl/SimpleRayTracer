@@ -1,6 +1,8 @@
 #include "../include/CubeMap.h"
 
+CubeMap::CubeMap() {
 
+}
 CubeMap::CubeMap(Image right_face, Image left_face, Image top_face, Image bottom_face, Image front_face, Image back_face){
 	
 	rightFace = right_face;

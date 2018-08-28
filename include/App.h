@@ -21,7 +21,7 @@ class App{
 	Image rockTexture;
 	Model simpleModel;
 	Image outputImage;
-
+	CubeMap environmentMap;
 public:
 
 	App();
@@ -29,6 +29,7 @@ public:
 	void dispose();
 	void renderToImage();
 	void exportImage(std::string outputFileName);
+
 
 private:
 	void threadTask(int startRow);
