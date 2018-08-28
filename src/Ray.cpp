@@ -25,9 +25,6 @@ bool Ray::intersectModel(const Model& model, glm::vec3& fragPosition, glm::vec2&
 		//if ray hits triangle
 		if(intersectTriangle(model.faces.at(currFace), currIntersection)){
 
-			//debug
-			//cout << "hit a triangle" << endl;
-
 			float currDist = glm::length(currIntersection - origin);
 
 			//if first time we hit a face, OR we hit a new closest face

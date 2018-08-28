@@ -9,6 +9,7 @@ include("external/glm.cmake")
 set(INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/include/")
 set(INCLUDE_FILES
 	"${INCLUDE_DIRECTORY}/Image.h"
+	"${INCLUDE_DIRECTORY}/App.h"
 	"${INCLUDE_DIRECTORY}/Model.h"
 	"${INCLUDE_DIRECTORY}/Ray.h"
 	"${INCLUDE_DIRECTORY}/Triangle.h"
@@ -27,6 +28,7 @@ set(INCLUDE_DIRECTORIES
 set(SOURCE_DIRECTORY "${CMAKE_SOURCE_DIR}/src/" )
 set(SOURCE_FILES 
 	"${SOURCE_DIRECTORY}/main.cpp"
+	"${SOURCE_DIRECTORY}/App.cpp"
 	"${SOURCE_DIRECTORY}/Image.cpp"
 	"${SOURCE_DIRECTORY}/Model.cpp"
 	"${SOURCE_DIRECTORY}/Ray.cpp"

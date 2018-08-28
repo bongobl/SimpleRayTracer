@@ -31,14 +31,16 @@ class Image{
 public:
 	Image();
 	~Image();
+	void dispose();
 
 	void setAsRead(std::string inFileName);
 	void setAsWrite(int image_width, int image_height);
+	
 
 	void setPixel(int x_coord, int y_coord, glm::vec3 color);
 	void exportPNG(std::string image_name);
 	int getMode();
-
+	
 	glm::vec3 sample(glm::vec2 param) const;
 
 	enum IOMode {NONE, READ, WRITE};

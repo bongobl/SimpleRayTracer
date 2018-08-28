@@ -8,7 +8,6 @@
 struct Ray{
 
 	glm::vec3 origin;
-private:
 	glm::vec3 direction;	
 public:
 

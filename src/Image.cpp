@@ -19,13 +19,21 @@ Image::Image(){
 }
 
 Image::~Image(){
-
+	
 }
 
+void Image::dispose() {
+	if (pixels != NULL) {
+		delete[] pixels;
+		pixels = NULL;
+	}
+	mode = NONE;
+	width = height = 0;
+}
 void Image::setAsRead(std::string inFileName){
 
 	if(mode != NONE){
-		std::cerr << "Image mode already set, can't be changed" << std::endl;
+		std::cerr << "Image: Image mode already set, can't be changed" << std::endl;
 		return;
 	}
 	mode = READ;
@@ -35,7 +43,7 @@ void Image::setAsRead(std::string inFileName){
 	unsigned char* data;
 	data = stbi_load(inFileName.c_str(), &width, &height, &numChannels, STBI_rgb);
 	if (numChannels == -1) {
-		std::cerr << "Image name " << inFileName << " not found" << std::endl;
+		std::cerr << "Image: Image name " << inFileName << " not found" << std::endl;
 		return;
 	}
 	pixels = new Color[height * width];
@@ -54,7 +62,7 @@ void Image::setAsRead(std::string inFileName){
 }
 void Image::setAsWrite(int image_width, int image_height){
 	if(mode != NONE){
-		std::cerr << "Image mode and resolution already set, can't be changed" << std::endl;
+		std::cerr << "Image: Image mode and resolution already set, can't be changed" << std::endl;
 		return;
 	}
 	mode = WRITE;
@@ -62,10 +70,12 @@ void Image::setAsWrite(int image_width, int image_height){
 	height = image_height;
 	pixels = new Color[height * width];
 }
+
+
 void Image::setPixel(int x_coord, int y_coord, glm::vec3 color){
 	
 	if(mode != WRITE){
-		std::cerr << "Image must be in WRITE mode to set pixel" << std::endl;
+		std::cerr << "Image: Image must be in WRITE mode to set pixel" << std::endl;
 		return;
 	}
 	//DO PARAMETER ERROR CHECKING HERE
@@ -82,7 +92,7 @@ void Image::exportPNG(std::string image_name){
 
 	//error check
 	if(mode != WRITE){
-		std::cerr << "Image must be in WRITE mode to exportPPM" << std::endl;
+		std::cerr << "Image: Image must be in WRITE mode to exportPPM" << std::endl;
 		return;
 	}
 
@@ -106,12 +116,21 @@ glm::vec3 Image::sample(glm::vec2 param) const{
 
 	//error checking
 	if(mode == NONE){
-		std::cerr << "Image must be initialized as READ or WRITE before it can be used" << std::endl;
-	}
-	if(param.x < 0 || param.x > 1 || param.y < 0 || param.y > 1){
-		std::cerr << "UV coords must be in range 0 - 1 inclusive" << std::endl;
+		std::cerr << "Image: Image must be initialized as READ or WRITE before it can be used" << std::endl;
+		return glm::vec3(0,0,0);
 	}
 
+	//bounds checking
+	if (param.x < 0)
+		param.x = 0;
+	if (param.x > 1)
+		param.x = 1;
+	if (param.y < 0)
+		param.y = 0;
+	if (param.y > 1)
+		param.y = 1;
+	
+	//convert to pixel coordinates
 	int x_coord = (int)(param.x * width);
 	int y_coord = (int)((1 - param.y) * height);
 
@@ -121,6 +140,7 @@ glm::vec3 Image::sample(glm::vec2 param) const{
 		return glm::vec3(0,0,0);
 	}
 
+	//sample image and return color
 	Color pixel = pixels[y_coord * width + x_coord];
 	return glm::vec3(toSampleValue(pixel.red), toSampleValue(pixel.green), toSampleValue(pixel.blue));
 
