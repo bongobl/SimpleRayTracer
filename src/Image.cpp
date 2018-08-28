@@ -13,6 +13,8 @@
 
 Image::Image(){
 	mode = NONE;
+	width = height = 0;
+	pixels = NULL;
 	
 }
 

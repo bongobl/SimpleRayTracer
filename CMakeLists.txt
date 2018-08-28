@@ -13,6 +13,7 @@ set(INCLUDE_FILES
 	"${INCLUDE_DIRECTORY}/Ray.h"
 	"${INCLUDE_DIRECTORY}/Triangle.h"
 	"${INCLUDE_DIRECTORY}/Vertex.h"
+	"${INCLUDE_DIRECTORY}/Material.h"
 )
 
 set(INCLUDE_DIRECTORIES
@@ -31,6 +32,7 @@ set(SOURCE_FILES
 	"${SOURCE_DIRECTORY}/Ray.cpp"
 	"${SOURCE_DIRECTORY}/Triangle.cpp"
 	"${SOURCE_DIRECTORY}/Vertex.cpp"
+	"${SOURCE_DIRECTORY}/Material.cpp"
 )
 
 set(RESOURCE_DIRECTORIES
