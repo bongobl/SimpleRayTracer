@@ -3,5 +3,4 @@
 Makefile~
 *.o
 *.exe
-*.ppm
 build/

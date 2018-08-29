@@ -9,12 +9,12 @@ void App::init() {
 	//create surface texture
 	rockTexture.setAsRead("resources/textures/rock.jpg");
 
-	environmentMap.rightFace.setAsRead("resources/textures/CubeMap/right.ppm");
-	environmentMap.leftFace.setAsRead("resources/textures/CubeMap/left.ppm");
-	environmentMap.topFace.setAsRead("resources/textures/CubeMap/top.ppm");
-	environmentMap.bottomFace.setAsRead("resources/textures/CubeMap/bottom.ppm");
-	environmentMap.frontFace.setAsRead("resources/textures/CubeMap/front.ppm");
-	environmentMap.backFace.setAsRead("resources/textures/CubeMap/back.ppm");
+	environmentMap.rightFace.setAsRead("resources/textures/CubeMap/right.jpg");
+	environmentMap.leftFace.setAsRead("resources/textures/CubeMap/left.jpg");
+	environmentMap.topFace.setAsRead("resources/textures/CubeMap/top.jpg");
+	environmentMap.bottomFace.setAsRead("resources/textures/CubeMap/bottom.jpg");
+	environmentMap.frontFace.setAsRead("resources/textures/CubeMap/front.jpg");
+	environmentMap.backFace.setAsRead("resources/textures/CubeMap/back.jpg");
 
 	//create material
 	Material basicMaterial;
