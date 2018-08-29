@@ -11,6 +11,7 @@ struct Ray{
 	glm::vec3 direction;	
 public:
 
+	Ray();
 	Ray(glm::vec3 origin_, glm::vec3 direction_);
 	~Ray();
 

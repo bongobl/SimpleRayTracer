@@ -1,6 +1,9 @@
 #define EDGE_BIAS 0.006	//when hitpoint on edge or point
 #include "../include/Ray.h"
 
+Ray::Ray(): origin(glm::vec3(0,0,0)), direction(glm::vec3(0,0,-1)) {
+	
+}
 Ray::Ray(glm::vec3 origin_, glm::vec3 direction_) : origin(origin_), direction(direction_) {
 
 }

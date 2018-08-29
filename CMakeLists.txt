@@ -16,6 +16,7 @@ set(INCLUDE_FILES
 	"${INCLUDE_DIRECTORY}/Vertex.h"
 	"${INCLUDE_DIRECTORY}/Material.h"
 	"${INCLUDE_DIRECTORY}/CubeMap.h"
+	"${INCLUDE_DIRECTORY}/Camera.h"
 )
 
 set(INCLUDE_DIRECTORIES
@@ -37,6 +38,7 @@ set(SOURCE_FILES
 	"${SOURCE_DIRECTORY}/Vertex.cpp"
 	"${SOURCE_DIRECTORY}/Material.cpp"
 	"${SOURCE_DIRECTORY}/CubeMap.cpp"
+	"${SOURCE_DIRECTORY}/Camera.cpp"
 )
 
 set(RESOURCE_DIRECTORIES

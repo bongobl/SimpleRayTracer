@@ -16,9 +16,5 @@ struct Material{
 	Image surfaceTexture;
 
 	Material();
-	Material(Image surface_texture);
-	Material(Image surface_texture, glm::vec3 _diffuse, glm::vec3 _specular, glm::vec3 _ambient);
 
-
-		
 };
