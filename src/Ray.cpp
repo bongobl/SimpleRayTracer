@@ -46,12 +46,18 @@ bool Ray::intersectModel(const Model& model, glm::vec3& fragPosition, glm::vec2&
 
 bool Ray::intersectTriangle(const Triangle& triangle, glm::vec3& intersection) const {
 
-	//if ray is perpendicular to triangle normal, they don't intersect
-	if(glm::dot(triangle.getFaceNormal(), direction) >= 0){
+	//if ray is perpendicular to normal, ray never hits triangle plane
+	if (glm::dot(triangle.getFaceNormal(), direction) == 0) {
 		return false;
 	}
-	
-	glm::vec3 n = triangle.getFaceNormal();
+
+	//CODE FOR BACKFACE CULLING, TOGGLE AT WILL
+	//if ray and triangle normal point in roughly same direction, they don't intersect
+	//if(glm::dot(triangle.getFaceNormal(), direction) > 0){
+	//	return false;
+	//}
+
+	glm::vec3 n =  triangle.getFaceNormal();
 	glm::vec3 dir = glm::normalize(direction);
 	float d = glm::dot(n, triangle.v1.position);
 
@@ -67,15 +73,12 @@ bool Ray::intersectTriangle(const Triangle& triangle, glm::vec3& intersection) c
 
 	//run through conclusive cases of intersection point out of triangle
 	if(glm::dot(glm::cross(triangle.v2.position - triangle.v1.position, Q - triangle.v1.position), n) < -EDGE_BIAS){
-		//cout << "a" << endl;
 		return false;
 	}
 	if(glm::dot(glm::cross(triangle.v3.position - triangle.v2.position, Q - triangle.v2.position), n) < -EDGE_BIAS){
-		//cout << "b" << endl;
 		return false;
 	}
 	if(glm::dot(glm::cross(triangle.v1.position - triangle.v3.position, Q - triangle.v3.position), n) < -EDGE_BIAS){
-		//cout << "c" << endl;
 		return false;
 	}
 

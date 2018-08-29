@@ -120,25 +120,22 @@ glm::vec3 Image::sample(glm::vec2 param) const{
 		return glm::vec3(1,1,1);
 	}
 
-	//bounds checking
-	if (param.x < 0)
-		param.x = 0;
-	if (param.x > 1)
-		param.x = 1;
-	if (param.y < 0)
-		param.y = 0;
-	if (param.y > 1)
-		param.y = 1;
 	
 	//convert to pixel coordinates
 	int x_coord = (int)(param.x * width);
 	int y_coord = (int)((1 - param.y) * height);
 
 	
-	//DO PARAMETER ERROR CHECKING HERE
-	if(x_coord >= width || y_coord >= height || x_coord < 0 || y_coord < 0){
-		return glm::vec3(0,0,0);
-	}
+	//bounds checking
+	if (x_coord >= width)
+		x_coord = width - 1;
+	if (y_coord >= height)
+		y_coord = height - 1;
+	if (x_coord < 0)
+		x_coord = 0;
+	if (y_coord < 0)
+		y_coord = 0;
+	
 
 	//sample image and return color
 	Color pixel = pixels[y_coord * width + x_coord];

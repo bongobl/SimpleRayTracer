@@ -1,6 +1,6 @@
 #include "../include/App.h"
 
-App::App() : simpleModel("resources/ObjModels/cube.obj"){
+App::App() : simpleModel("resources/ObjModels/FilletCube.obj"){
 	
 }
 
@@ -18,9 +18,11 @@ void App::init() {
 
 	//create material
 	Material basicMaterial;
-	basicMaterial.specular = glm::vec3(6, 6, 6);
+	//basicMaterial.diffuse = glm::vec3(0, 0, 1);
+	basicMaterial.specular = glm::vec3(1, 1, 1);
 	basicMaterial.surfaceTexture = rockTexture;
 	basicMaterial.surfaceTextureStrength = 0.0f;
+	//basicMaterial.envReflectionStrength = 0.7f;
 
 	//assign material to model
 	simpleModel.material = basicMaterial;
@@ -75,13 +77,14 @@ void App::renderRow(int yVal){
 	for (int x = 0; x < OUTPUT_WIDTH; ++x) {
 
 		//Orthographic Rays
-		//Ray ray(glm::vec3( 0.5f * (x - 520),0.5f * ((OUTPUT_HEIGHT - yVal) - 500),5000), glm::vec3(0,0,-1));		
+		//Ray ray(glm::vec3( 0.5f * (x - 500),0.5f * ((OUTPUT_HEIGHT - yVal) - 500),5000), glm::vec3(0,0,-1));		
 
 		//Perspective Rays
 		Ray ray(glm::vec3(0, 0, 0), glm::vec3(x - 500.0f, (OUTPUT_HEIGHT - yVal) - 500.0f, -1200.0f));
 
+
 		//Move Camera
-		glm::mat4 cameraMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(-40, 0, 600));
+		glm::mat4 cameraMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(45.0f), glm::vec3(0, 1, 0)) * glm::rotate(glm::mat4(1.0f), glm::radians(-28.0f), glm::vec3(1, 0, 0)) * glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 600));
 		ray.origin = cameraMatrix * glm::vec4(ray.origin,1);
 		ray.direction = cameraMatrix * glm::vec4(ray.direction, 0);
 
