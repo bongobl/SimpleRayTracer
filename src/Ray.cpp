@@ -1,4 +1,5 @@
-#define EDGE_BIAS 0.006	//when hitpoint on edge or point
+#define EDGE_BIAS 0.006f	//when hitpoint on edge or point
+#define FACE_BIAS 0.05f
 #include "../include/Ray.h"
 
 Ray::Ray(): origin(glm::vec3(0,0,0)), direction(glm::vec3(0,0,-1)) {
@@ -30,7 +31,7 @@ bool Ray::intersectModel(const Model& model, glm::vec3& fragPosition, glm::vec2&
 
 			float currDist = glm::length(currIntersection - origin);
 
-			if (currDist == 0) {
+			if (currDist <= FACE_BIAS) {
 				continue;
 			}
 			//if first time we hit a face, OR we hit a new closest face

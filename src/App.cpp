@@ -21,7 +21,7 @@ void App::init() {
 	basicMaterial.specular = glm::vec3(1, 1, 1);
 	basicMaterial.surfaceTexture = rockTexture;
 	basicMaterial.surfaceTextureStrength = 0.0f;
-	//basicMaterial.envReflectionStrength = 0.7f;
+	//basicMaterial.envReflectionStrength = 0.1f;
 
 	//assign material to model
 	simpleModel.material = basicMaterial;
@@ -94,11 +94,13 @@ void App::renderRow(int yVal, Model& model){
 			glm::vec3 surfaceTextureColor = glm::vec3(1, 1, 1) - (model.material.surfaceTextureStrength *
 				(glm::vec3(1, 1, 1) - model.material.surfaceTexture.sample(fragTexCoord)));
 
-			//sample cube map
+			//sample environment map
 			glm::vec3 cubeMapSampler = glm::reflect(ray.direction, fragNormal);
 			glm::vec3 environmentColor = glm::vec3(1, 1, 1) - (model.material.envReflectionStrength *
 				(glm::vec3(1, 1, 1) - environmentMap.sample(cubeMapSampler)));
 
+			//calc refraction
+			glm::vec3 refractionColor = simpleRefract(model, ray);
 			//calculate diffuse
 			glm::vec3 diffuseComponent = glm::dot(fragNormal, -1.0f * directionalLight) * model.material.diffuse;
 
@@ -111,10 +113,9 @@ void App::renderRow(int yVal, Model& model){
 			glm::vec3 ambientComponent = model.material.ambient;
 
 			//combine components			
-			glm::vec3 finalColor = environmentColor * surfaceTextureColor * (diffuseComponent + specularComponent + ambientComponent);
-
-			finalColor = simpleRefract(model, ray);
-
+			glm::vec3 finalColor = refractionColor + surfaceTextureColor * (diffuseComponent + specularComponent + ambientComponent);
+			finalColor = refractionColor * glm::vec3(0,1,0);
+	
 			//set image pixel value
 			outputImage.setPixel(x, yVal, finalColor);
 
@@ -139,12 +140,16 @@ glm::vec3 App::simpleRefract(Model& model, Ray ray) {
 
 	
 	bool inModel = false;
+
 	//go in model
 	finalRay.intersectModel(model, fragPosition, fragTexCoord, fragNormal);
 	finalRay.origin = fragPosition;
-	finalRay.direction = glm::refract(glm::normalize(finalRay.direction), fragNormal, 0.9f);
+	finalRay.direction = glm::refract(glm::normalize(finalRay.direction), fragNormal, 0.85f);
 
-
+	//go out model
+	finalRay.intersectModel(model, fragPosition, fragTexCoord, fragNormal);
+	finalRay.origin = fragPosition;
+	finalRay.direction = glm::refract(glm::normalize(finalRay.direction), -fragNormal, 0.85f);
 
 	return environmentMap.sample(finalRay.direction);
 }
