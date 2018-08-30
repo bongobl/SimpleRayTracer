@@ -113,7 +113,7 @@ void App::renderRow(int yVal, Model& model){
 			//combine components			
 			glm::vec3 finalColor = environmentColor * surfaceTextureColor * (diffuseComponent + specularComponent + ambientComponent);
 
-			//finalColor = simpleRefract(model, ray);
+			finalColor = simpleRefract(model, ray);
 
 			//set image pixel value
 			outputImage.setPixel(x, yVal, finalColor);
@@ -139,9 +139,11 @@ glm::vec3 App::simpleRefract(Model& model, Ray ray) {
 
 	
 	bool inModel = false;
+	//go in model
 	finalRay.intersectModel(model, fragPosition, fragTexCoord, fragNormal);
 	finalRay.origin = fragPosition;
-	finalRay.direction = glm::refract(finalRay.direction, fragNormal, 0.0f);
+	finalRay.direction = glm::refract(glm::normalize(finalRay.direction), fragNormal, 0.9f);
+
 
 
 	return environmentMap.sample(finalRay.direction);
