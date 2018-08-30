@@ -24,6 +24,8 @@ class App{
 	Model simpleModel;
 	Image outputImage;
 	CubeMap environmentMap;
+
+	
 public:
 
 	App();
@@ -34,6 +36,8 @@ public:
 
 
 private:
-	void threadTask(int startRow);
-	void renderRow(int yVal);	
+	void renderModel(Model& model);
+	void threadTask(int startRow, Model& model);
+	void renderRow(int yVal, Model& model);	
+	glm::vec3 simpleRefract(Model& model, Ray ray);
 };

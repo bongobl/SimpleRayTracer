@@ -71,6 +71,17 @@ void Image::setAsWrite(int image_width, int image_height){
 	pixels = new Color[height * width];
 }
 
+void Image::setSolidColor(glm::vec3 color) {
+	if (mode != WRITE) {
+		std::cerr << "Image: Image must be in WRITE mode to set Solid Color" << std::endl;
+		return;
+	}
+	for (int pixelY = 0; pixelY < height; ++pixelY) {
+		for (int pixelX = 0; pixelX < width; ++pixelX) {
+			setPixel(pixelX, pixelY, color);
+		}
+	}
+}
 
 void Image::setPixel(int x_coord, int y_coord, glm::vec3 color){
 	

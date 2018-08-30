@@ -46,13 +46,10 @@ void App::dispose() {
 void App::renderToImage(){
 	
 	cout << "Rendering Image" << endl;
-	std::vector<std::thread> threads;
-	for (unsigned int i = 0; i < NUM_THREADS; ++i) {
-		threads.push_back(std::thread(&App::threadTask, this, i));
-	}
-	for (unsigned int i = 0; i < NUM_THREADS; ++i) {
-		threads[i].join();
-	}
+	outputImage.setSolidColor(glm::vec3(0, 0.5f, 0.5f));
+	renderModel(simpleModel);
+
+	
 }
 
 void App::exportImage(std::string outputFileName) {
@@ -63,12 +60,22 @@ void App::exportImage(std::string outputFileName) {
 
 
 //Private Helpers
-void App::threadTask(int startRow){
-	for (int currRow = startRow; currRow < OUTPUT_HEIGHT; currRow += NUM_THREADS) {
-		renderRow(currRow);
+
+void App::renderModel(Model& model) {
+	std::vector<std::thread> threads;
+	for (unsigned int i = 0; i < NUM_THREADS; ++i) {
+		threads.push_back(std::thread(&App::threadTask, this, i, std::ref(model)));
+	}
+	for (unsigned int i = 0; i < NUM_THREADS; ++i) {
+		threads[i].join();
 	}
 }
-void App::renderRow(int yVal){
+void App::threadTask(int startRow, Model& model){
+	for (int currRow = startRow; currRow < OUTPUT_HEIGHT; currRow += NUM_THREADS) {
+		renderRow(currRow, model);
+	}
+}
+void App::renderRow(int yVal, Model& model){
 	glm::vec3 fragPosition;
 	glm::vec2 fragTexCoord;
 	glm::vec3 fragNormal;
@@ -78,33 +85,35 @@ void App::renderRow(int yVal){
 		Ray ray = Camera::getRay(x, yVal);
 
 		//fire ray into scene to find color for pixel
-		if (ray.intersectModel(simpleModel, fragPosition, fragTexCoord, fragNormal)) {
+		if (ray.intersectModel(model, fragPosition, fragTexCoord, fragNormal)) {
 
 			//define light
 			glm::vec3 directionalLight = glm::normalize(glm::vec3(1, -1, -1));
 
 			//sample surface texture
-			glm::vec3 surfaceTextureColor = glm::vec3(1, 1, 1) - (simpleModel.material.surfaceTextureStrength *
-				(glm::vec3(1, 1, 1) - simpleModel.material.surfaceTexture.sample(fragTexCoord)));
+			glm::vec3 surfaceTextureColor = glm::vec3(1, 1, 1) - (model.material.surfaceTextureStrength *
+				(glm::vec3(1, 1, 1) - model.material.surfaceTexture.sample(fragTexCoord)));
 
 			//sample cube map
 			glm::vec3 cubeMapSampler = glm::reflect(ray.direction, fragNormal);
-			glm::vec3 environmentColor =  glm::vec3(1,1,1) - (simpleModel.material.envReflectionStrength * 
-											(glm::vec3(1,1,1)  - environmentMap.sample(cubeMapSampler)));
+			glm::vec3 environmentColor = glm::vec3(1, 1, 1) - (model.material.envReflectionStrength *
+				(glm::vec3(1, 1, 1) - environmentMap.sample(cubeMapSampler)));
 
 			//calculate diffuse
-			glm::vec3 diffuseComponent = glm::dot(fragNormal, -1.0f * directionalLight) * simpleModel.material.diffuse;
+			glm::vec3 diffuseComponent = glm::dot(fragNormal, -1.0f * directionalLight) * model.material.diffuse;
 
 			//calculate specular
 			glm::vec3 reflection = glm::reflect(directionalLight, fragNormal);
 			glm::vec3 toEye = glm::normalize(ray.origin - fragPosition);
-			glm::vec3 specularComponent = (float)pow(max(glm::dot(reflection, toEye), 0.0f), 20) * simpleModel.material.specular;
+			glm::vec3 specularComponent = (float)pow(max(glm::dot(reflection, toEye), 0.0f), 20) * model.material.specular;
 
 			//calculate ambient
-			glm::vec3 ambientComponent = simpleModel.material.ambient;
+			glm::vec3 ambientComponent = model.material.ambient;
 
 			//combine components			
 			glm::vec3 finalColor = environmentColor * surfaceTextureColor * (diffuseComponent + specularComponent + ambientComponent);
+
+			//finalColor = simpleRefract(model, ray);
 
 			//set image pixel value
 			outputImage.setPixel(x, yVal, finalColor);
@@ -112,8 +121,28 @@ void App::renderRow(int yVal){
 		}
 		else {
 
-			//no ray intersection, set to background color
-			outputImage.setPixel(x, yVal, glm::vec3(1, 1, 1));
+			//don't use when rendering multiple objects, this will draw over previously rendered objects
+			outputImage.setPixel(x, yVal, environmentMap.sample(ray.direction));
 		}
+		
 	}
 }//End render row	
+
+glm::vec3 App::simpleRefract(Model& model, Ray ray) {
+
+	Ray finalRay = ray;
+
+	glm::vec3 fragPosition;
+	glm::vec2 fragTexCoord;
+	glm::vec3 fragNormal;
+
+
+	
+	bool inModel = false;
+	finalRay.intersectModel(model, fragPosition, fragTexCoord, fragNormal);
+	finalRay.origin = fragPosition;
+	finalRay.direction = glm::refract(finalRay.direction, fragNormal, 0.0f);
+
+
+	return environmentMap.sample(finalRay.direction);
+}

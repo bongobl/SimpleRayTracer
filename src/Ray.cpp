@@ -30,6 +30,9 @@ bool Ray::intersectModel(const Model& model, glm::vec3& fragPosition, glm::vec2&
 
 			float currDist = glm::length(currIntersection - origin);
 
+			if (currDist == 0) {
+				continue;
+			}
 			//if first time we hit a face, OR we hit a new closest face
 			if(!hitFace || currDist < minDist){
 				fragPosition = currIntersection;
