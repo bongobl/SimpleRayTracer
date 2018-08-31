@@ -15,8 +15,8 @@
 #include "../include/Camera.h"
 
 
-const int OUTPUT_WIDTH = 1280;
-const int OUTPUT_HEIGHT = 720;
+const int OUTPUT_WIDTH = 1280 * 1.5;
+const int OUTPUT_HEIGHT = 720 * 1.5;
 const int NUM_THREADS = 60;
 
 class App{
@@ -39,5 +39,6 @@ private:
 	void renderModel(Model& model);
 	void threadTask(int startRow, Model& model);
 	void renderRow(int yVal, Model& model);	
-	glm::vec3 simpleRefract(Model& model, Ray ray);
+	glm::vec3 refractedColor(Model& model, Ray ray);
+	glm::vec3 refract(glm::vec3 incident, glm::vec3 normal, float nVacuum, float nMaterial);
 };

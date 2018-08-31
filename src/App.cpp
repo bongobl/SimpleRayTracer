@@ -100,7 +100,7 @@ void App::renderRow(int yVal, Model& model){
 				(glm::vec3(1, 1, 1) - environmentMap.sample(cubeMapSampler)));
 
 			//calc refraction
-			glm::vec3 refractionColor = simpleRefract(model, ray);
+			glm::vec3 refractionColor = refractedColor(model, ray);
 			//calculate diffuse
 			glm::vec3 diffuseComponent = glm::dot(fragNormal, -1.0f * directionalLight) * model.material.diffuse;
 
@@ -112,9 +112,12 @@ void App::renderRow(int yVal, Model& model){
 			//calculate ambient
 			glm::vec3 ambientComponent = model.material.ambient;
 
-			//combine components			
-			glm::vec3 finalColor = refractionColor + surfaceTextureColor * (diffuseComponent + specularComponent + ambientComponent);
-			finalColor = refractionColor * glm::vec3(0,1,0);
+			//combine components	
+			
+			glm::vec3 finalColor = environmentColor * surfaceTextureColor * (diffuseComponent + specularComponent + ambientComponent);
+			float refLerp = 0.0f;
+			finalColor = (1 - refLerp) * refractionColor + (refLerp) * environmentColor;
+			//finalColor = (0.7f) * refractionColor + (0.3f) * environmentColor;
 	
 			//set image pixel value
 			outputImage.setPixel(x, yVal, finalColor);
@@ -129,7 +132,7 @@ void App::renderRow(int yVal, Model& model){
 	}
 }//End render row	
 
-glm::vec3 App::simpleRefract(Model& model, Ray ray) {
+glm::vec3 App::refractedColor(Model& model, Ray ray) {
 
 	Ray finalRay = ray;
 
@@ -137,19 +140,66 @@ glm::vec3 App::simpleRefract(Model& model, Ray ray) {
 	glm::vec2 fragTexCoord;
 	glm::vec3 fragNormal;
 
-
-	
 	bool inModel = false;
 
-	//go in model
-	finalRay.intersectModel(model, fragPosition, fragTexCoord, fragNormal);
-	finalRay.origin = fragPosition;
-	finalRay.direction = glm::refract(glm::normalize(finalRay.direction), fragNormal, 0.85f);
+	float matRefIndex = 1.05f;
 
+	//go in model
+	if (finalRay.intersectModel(model, fragPosition, fragTexCoord, fragNormal)) {
+		finalRay.origin = fragPosition;
+		finalRay.direction = refract(finalRay.direction, fragNormal, 1, matRefIndex);
+	}
 	//go out model
-	finalRay.intersectModel(model, fragPosition, fragTexCoord, fragNormal);
-	finalRay.origin = fragPosition;
-	finalRay.direction = glm::refract(glm::normalize(finalRay.direction), -fragNormal, 0.85f);
+	if (finalRay.intersectModel(model, fragPosition, fragTexCoord, fragNormal)) {
+		finalRay.origin = fragPosition;
+		finalRay.direction = refract(finalRay.direction, fragNormal, 1, matRefIndex);
+	}
 
 	return environmentMap.sample(finalRay.direction);
+}
+
+glm::vec3 App::refract(glm::vec3 incident, glm::vec3 normal, float nVacuum, float nMaterial){
+
+	//make sure incident angle is normalized
+	incident = glm::normalize(incident);
+	
+	//calc incident angle
+	float incidentAngle = glm::acos(glm::dot(-1.0f * incident, normal));
+
+	float n1;	
+	float n2;	
+
+	//Use incident angle to determine if ray is coming from inside material, or from vacuum
+	if(incidentAngle > glm::radians(90.0f)){
+		incidentAngle = glm::radians(180.0f) - incidentAngle;
+		normal = -1.0f * normal;
+		n1 = nMaterial;
+		n2 = nVacuum;
+	}
+	else {
+		n1 = nVacuum;
+		n2 = nMaterial;
+	}
+
+	//check for total internal reflection if ray is incident inside material
+	if (n1 > n2) {
+
+		//find criticalAngle
+		float criticalAngle = glm::asin(n2 / n1);
+
+		//if incident angle >= critical angle, ray gets reflected back in material
+		if (incidentAngle >= criticalAngle) {
+			return glm::reflect(incident, normal);
+		}
+	}
+
+	//calc reflective angle using Snell's law
+	float refractAngle = glm::asin( (n1 / n2) * glm::sin(incidentAngle) );
+
+	//calc pivot vector
+	glm::vec3 pivot = glm::cross(incident, normal);
+
+	//rotate negative normal around pivot by refractive angle amount to get final angle
+	return glm::rotate(glm::mat4(1.0f), refractAngle, pivot) * glm::vec4(-1.0f * normal,0);
+
 }
