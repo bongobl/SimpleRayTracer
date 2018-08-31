@@ -15,9 +15,9 @@
 #include "../include/Camera.h"
 
 
-const int OUTPUT_WIDTH = 1280 * 1.5;
-const int OUTPUT_HEIGHT = 720 * 1.5;
-const int NUM_THREADS = 60;
+const int OUTPUT_WIDTH = 1280;
+const int OUTPUT_HEIGHT = 720;
+const int NUM_THREADS = 90;
 
 class App{
 	Image rockTexture;

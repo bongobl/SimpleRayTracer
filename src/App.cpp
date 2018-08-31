@@ -6,9 +6,8 @@ App::App() : simpleModel("resources/ObjModels/FilletCube.obj"){
 
 void App::init() {
 
-	//create surface texture
-	rockTexture.setAsRead("resources/textures/rock.jpg");
 
+	//create environment map
 	environmentMap.rightFace.setAsRead("resources/textures/CubeMap/right.jpg");
 	environmentMap.leftFace.setAsRead("resources/textures/CubeMap/left.jpg");
 	environmentMap.topFace.setAsRead("resources/textures/CubeMap/top.jpg");
@@ -16,12 +15,16 @@ void App::init() {
 	environmentMap.frontFace.setAsRead("resources/textures/CubeMap/front.jpg");
 	environmentMap.backFace.setAsRead("resources/textures/CubeMap/back.jpg");
 
+	//create surface texture
+	rockTexture.setAsRead("resources/textures/rock.jpg");
+
 	//create material
 	Material basicMaterial;
 	basicMaterial.specular = glm::vec3(1, 1, 1);
 	basicMaterial.surfaceTexture = rockTexture;
 	basicMaterial.surfaceTextureStrength = 0.0f;
-	//basicMaterial.envReflectionStrength = 0.1f;
+	basicMaterial.refractiveIndex = 1.03f;
+	basicMaterial.reflectToRefractLerp = 0.9f;
 
 	//assign material to model
 	simpleModel.material = basicMaterial;
@@ -40,7 +43,10 @@ void App::dispose() {
 	environmentMap.frontFace.dispose();
 	environmentMap.backFace.dispose();
 
+	//clean up surface texture
 	rockTexture.dispose();
+
+	//clean up output image
 	outputImage.dispose();
 }
 void App::renderToImage(){
@@ -60,7 +66,6 @@ void App::exportImage(std::string outputFileName) {
 
 
 //Private Helpers
-
 void App::renderModel(Model& model) {
 	std::vector<std::thread> threads;
 	for (unsigned int i = 0; i < NUM_THREADS; ++i) {
@@ -88,7 +93,7 @@ void App::renderRow(int yVal, Model& model){
 		if (ray.intersectModel(model, fragPosition, fragTexCoord, fragNormal)) {
 
 			//define light
-			glm::vec3 directionalLight = glm::normalize(glm::vec3(1, -1, -1));
+			glm::vec3 directionalLight = glm::normalize(glm::vec3(-1, -1, -1));
 
 			//sample surface texture
 			glm::vec3 surfaceTextureColor = glm::vec3(1, 1, 1) - (model.material.surfaceTextureStrength *
@@ -99,10 +104,11 @@ void App::renderRow(int yVal, Model& model){
 			glm::vec3 environmentColor = glm::vec3(1, 1, 1) - (model.material.envReflectionStrength *
 				(glm::vec3(1, 1, 1) - environmentMap.sample(cubeMapSampler)));
 
-			//calc refraction
+			//calculate refraction
 			glm::vec3 refractionColor = refractedColor(model, ray);
+
 			//calculate diffuse
-			glm::vec3 diffuseComponent = glm::dot(fragNormal, -1.0f * directionalLight) * model.material.diffuse;
+			glm::vec3 diffuseComponent = max(glm::dot(fragNormal, -1.0f * directionalLight),0.0f) * model.material.diffuse;
 
 			//calculate specular
 			glm::vec3 reflection = glm::reflect(directionalLight, fragNormal);
@@ -112,12 +118,12 @@ void App::renderRow(int yVal, Model& model){
 			//calculate ambient
 			glm::vec3 ambientComponent = model.material.ambient;
 
-			//combine components	
-			
-			glm::vec3 finalColor = environmentColor * surfaceTextureColor * (diffuseComponent + specularComponent + ambientComponent);
-			float refLerp = 0.0f;
-			finalColor = (1 - refLerp) * refractionColor + (refLerp) * environmentColor;
-			//finalColor = (0.7f) * refractionColor + (0.3f) * environmentColor;
+			//combine reflection components			
+			glm::vec3 totalReflectionColor = environmentColor * surfaceTextureColor * (diffuseComponent + specularComponent + ambientComponent);
+
+			//lerp between reflectivness and refractivness
+			float refLerp = model.material.reflectToRefractLerp;
+			glm::vec3 finalColor = (1 - refLerp) * totalReflectionColor + (refLerp) * refractionColor;
 	
 			//set image pixel value
 			outputImage.setPixel(x, yVal, finalColor);
@@ -142,7 +148,7 @@ glm::vec3 App::refractedColor(Model& model, Ray ray) {
 
 	bool inModel = false;
 
-	float matRefIndex = 1.05f;
+	float matRefIndex = model.material.refractiveIndex;
 
 	//go in model
 	if (finalRay.intersectModel(model, fragPosition, fragTexCoord, fragNormal)) {

@@ -10,9 +10,11 @@ struct Material{
 	glm::vec3 specular;
 	glm::vec3 ambient;
 
+
 	float surfaceTextureStrength;
 	float envReflectionStrength;
-
+	float refractiveIndex;
+	float reflectToRefractLerp;
 	Image surfaceTexture;
 
 	Material();
