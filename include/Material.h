@@ -6,6 +6,10 @@
 #include "Image.h"
 struct Material{
 
+	//overall material's color
+	glm::vec3 color;
+
+	//phong reflection
 	glm::vec3 diffuse;
 	glm::vec3 specular;
 	glm::vec3 ambient;
@@ -14,7 +18,7 @@ struct Material{
 	float surfaceTextureStrength;
 	float envReflectionStrength;
 	float refractiveIndex;
-	float reflectToRefractLerp;
+	float reflectToRefractParam;
 	Image surfaceTexture;
 
 	Material();
