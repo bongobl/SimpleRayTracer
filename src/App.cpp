@@ -122,9 +122,10 @@ void App::renderRow(int yVal, Model& model){
 			//combine reflection components			
 			glm::vec3 totalReflectionColor = envReflectionColor * surfaceTextureColor * (diffuseComponent + specularComponent + ambientComponent);
 
-			//lerp between reflectivness and refractivness
+			
+
 			float refLerp;
-			float normalDotFragToCam = glm::max(glm::dot(glm::normalize(ray.origin - fragPosition), fragNormal),0.0f);
+			float normalDotFragToCam = glm::pow(glm::max(glm::dot(glm::normalize(ray.origin - fragPosition), fragNormal),0.0f), 0.7f);
 
 			if (model.material.reflectToRefractParam <= 0.5f) {
 				refLerp = 2 * model.material.reflectToRefractParam * normalDotFragToCam;
@@ -132,7 +133,7 @@ void App::renderRow(int yVal, Model& model){
 			else {
 				refLerp = 1 - 2 *  (1 - model.material.reflectToRefractParam) * (1 - normalDotFragToCam);
 			}
-			
+			//lerp between reflectivness and refractivness
 			glm::vec3 finalColor = model.material.color * ( (1 - refLerp) * totalReflectionColor + (refLerp) * refractionColor );
 	
 			//set image pixel value

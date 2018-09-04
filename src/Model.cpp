@@ -8,6 +8,8 @@ Model::Model(string model_filename){
 	position = glm::vec3(0,0,0);
 	orientation = glm::mat4(1.0f);
 	scale = glm::vec3(0,0,0);
+	toWorld = glm::mat4(1.0f);
+	toWorld3x3 = glm::mat3(1.0f);
 
 	//Load Mesh
 	FILE* fp;
@@ -72,3 +74,53 @@ Model::Model(string model_filename){
 
 	
 } 
+
+Model::~Model() {
+
+	//clean up vertices
+	for (int i = 0; i < vertices.size(); ++i) {
+		if (vertices.at(i) == NULL) {
+			delete vertices.at(i);
+		}
+	}
+}
+//position
+void Model::setPosition(glm::vec3 model_position) {
+	position = model_position;
+	updateToWorld();
+}
+glm::vec3 Model::getPosition() const {
+	return position;
+}
+
+//orientation
+void Model::setOrientation(glm::mat4 model_orientation) {
+	orientation = model_orientation;
+	updateToWorld();
+}
+glm::mat4 Model::getOrientation() const {
+	return orientation;
+}
+
+//scale
+void Model::setScale(glm::vec3 model_scale) {
+	scale = model_scale;
+	updateToWorld();
+}
+glm::vec3 Model::getScale() const {
+	return scale;
+}
+
+//toWorld
+glm::mat4 Model::getToWorld() const{
+	return toWorld;
+}
+glm::mat3 Model::getToWorld3x3() const{
+	return toWorld3x3;
+}
+
+//Private 
+void Model::updateToWorld() {
+	toWorld = glm::translate(glm::mat4(1.0f), position) * orientation * glm::scale(glm::mat4(1.0f), scale);
+	toWorld3x3 = glm::transpose(glm::inverse(toWorld));
+}
