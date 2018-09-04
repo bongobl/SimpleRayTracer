@@ -30,6 +30,11 @@ void App::init() {
 
 	//create output image texture
 	outputImage.setAsWrite(OUTPUT_WIDTH, OUTPUT_HEIGHT);
+
+	//transform model
+	simpleModel.setOrientation(glm::rotate(glm::mat4(1.0f), glm::radians(55.0f), glm::vec3(2, 4, -1)));
+	simpleModel.setPosition(glm::vec3(-250, -15, 150));
+
 }
 
 void App::dispose() {
@@ -63,7 +68,7 @@ void App::exportImage(std::string outputFileName) {
 
 
 //Private Helpers
-void App::renderModel(Model& model) {
+void App::renderModel(const Model& model) {
 	std::vector<std::thread> threads;
 	for (unsigned int i = 0; i < NUM_THREADS; ++i) {
 		threads.push_back(std::thread(&App::threadTask, this, i, std::ref(model)));
@@ -72,12 +77,12 @@ void App::renderModel(Model& model) {
 		threads[i].join();
 	}
 }
-void App::threadTask(int startRow, Model& model){
+void App::threadTask(int startRow, const Model& model){
 	for (int currRow = startRow; currRow < OUTPUT_HEIGHT; currRow += NUM_THREADS) {
 		renderRow(currRow, model);
 	}
 }
-void App::renderRow(int yVal, Model& model){
+void App::renderRow(int yVal, const Model& model){
 
 	glm::vec3 fragPosition;
 	glm::vec2 fragTexCoord;
@@ -123,7 +128,7 @@ void App::renderRow(int yVal, Model& model){
 			glm::vec3 totalReflectionColor = envReflectionColor * surfaceTextureColor * (diffuseComponent + specularComponent + ambientComponent);
 
 			
-
+			//define refLeft based on param and normal's relation to camera
 			float refLerp;
 			float normalDotFragToCam = glm::pow(glm::max(glm::dot(glm::normalize(ray.origin - fragPosition), fragNormal),0.0f), 0.7f);
 
@@ -149,15 +154,13 @@ void App::renderRow(int yVal, Model& model){
 	}
 }//End render row	
 
-glm::vec3 App::refractedColor(Model& model, Ray ray) {
+glm::vec3 App::refractedColor(const Model& model, Ray ray) {
 
 	Ray finalRay = ray;
 
 	glm::vec3 fragPosition;
 	glm::vec2 fragTexCoord;
 	glm::vec3 fragNormal;
-
-	bool inModel = false;
 
 	float matRefIndex = model.material.refractiveIndex;
 

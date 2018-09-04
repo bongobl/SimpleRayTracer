@@ -36,9 +36,9 @@ public:
 
 
 private:
-	void renderModel(Model& model);
-	void threadTask(int startRow, Model& model);
-	void renderRow(int yVal, Model& model);	
-	glm::vec3 refractedColor(Model& model, Ray ray);
+	void renderModel(const Model& model);
+	void threadTask(int startRow, const Model& model);
+	void renderRow(int yVal, const Model& model);	
+	glm::vec3 refractedColor(const Model& model, Ray ray);
 	glm::vec3 refract(glm::vec3 incident, glm::vec3 normal, float nVacuum, float nMaterial);
 };

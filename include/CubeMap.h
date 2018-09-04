@@ -21,10 +21,10 @@ public:
 	CubeMap();
 	CubeMap(Image right_face, Image left_face, Image top_face, Image bottom_face, Image front_face, Image back_face);
 
-	glm::vec3 sample(glm::vec3 param);
+	glm::vec3 sample(glm::vec3 param) const;
 
 	friend class App;
 
 private:
-	float paramaterized(float raw);
+	float paramaterized(float raw) const;
 };

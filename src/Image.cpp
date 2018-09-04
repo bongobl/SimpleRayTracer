@@ -99,7 +99,7 @@ void Image::setPixel(int x_coord, int y_coord, glm::vec3 color){
 
 
 }
-void Image::exportPNG(std::string image_name){
+void Image::exportPNG(std::string image_name) const{
 
 	//error check
 	if(mode != WRITE){
@@ -118,7 +118,7 @@ void Image::exportPNG(std::string image_name){
     stbi_write_png(image_name.c_str(), width, height, 3, data.data(), width * 3);
 }
 
-int Image::getMode(){
+int Image::getMode() const{
 	return mode;
 }
 

@@ -7,7 +7,7 @@ Model::Model(string model_filename){
 	//Transform (not used yet)
 	position = glm::vec3(0,0,0);
 	orientation = glm::mat4(1.0f);
-	scale = glm::vec3(0,0,0);
+	scale = glm::vec3(1,1,1);
 	toWorld = glm::mat4(1.0f);
 	toWorld3x3 = glm::mat3(1.0f);
 
@@ -26,8 +26,6 @@ Model::Model(string model_filename){
 
 	std::cout << "Parsing " << model_filename << "..." << std::endl;
 	
-	//to store all vertices from which triangles are later defined
-	vector<Vertex> vertices;
 
 	while (fgets(currLine, BUFSIZ, fp) != NULL) {
 
@@ -37,22 +35,21 @@ Model::Model(string model_filename){
 			//read vertex normal (normals are read first, so only push back vector here)
 			if (currLine[1] == 'n' && currLine[2] == ' ') {
 				sscanf(currLine, "vn %f %f %f", &x, &y, &z);
-				vertices.push_back( Vertex(glm::vec3(0,0,0), glm::vec2(0,0), glm::vec3(x,y,z)) );
+				vertices.push_back( new Vertex(glm::vec3(0,0,0), glm::vec2(0,0), glm::vec3(x,y,z)) );
 			}
 
 			//read in texCoords
 			else if (currLine[1] == 't' && currLine[2] == ' ') {
 				sscanf(currLine, "vt %f %f", &x, &y);
-				vertices.back().texCoord = glm::vec2(x, y);
-				//cout << vertices.back().texCoord.x << "    " << vertices.back().texCoord.y << endl;
+				vertices.back()->texCoord = glm::vec2(x, y);
+
 			}
 			//read vertex position
 			else if (currLine[1] == ' ') {
 				sscanf(currLine, "v %f %f %f", &x, &y, &z);
-				vertices.back().position = glm::vec3(x,y,z);
+				vertices.back()->position = glm::vec3(x,y,z);
 			}	
 		}
-
 
 		//Process Triangles
 		else if (currLine[0] == 'f' && currLine[1] == ' ') {
@@ -63,11 +60,13 @@ Model::Model(string model_filename){
 	}//END WHILE
 	
 
-	//debug
+	//report model stats
 	cout << "Loaded Model " << model_filename << " with " << vertices.size() << " vertices and " << faces.size() << " faces" << endl;
 
-	//don't need vertices list anymore
-	vertices.clear();
+	//Deep copy vertices to rawVertices
+	for (unsigned int i = 0; i < vertices.size(); ++i) {
+		rawVertices.push_back(new Vertex(*vertices.at(i)));
+	}
 
 	//close file after reading
 	fclose(fp);
@@ -78,34 +77,43 @@ Model::Model(string model_filename){
 Model::~Model() {
 
 	//clean up vertices
-	for (int i = 0; i < vertices.size(); ++i) {
-		if (vertices.at(i) == NULL) {
+	for (unsigned int i = 0; i < vertices.size(); ++i) {
+		if (vertices.at(i) != NULL) {
 			delete vertices.at(i);
+			vertices.at(i) = NULL;
+		}
+	}
+
+	//clean up raw vertices
+	for (unsigned int i = 0; i < rawVertices.size(); ++i) {
+		if (rawVertices.at(i) != NULL) {
+			delete rawVertices.at(i);
+			rawVertices.at(i) = NULL;
 		}
 	}
 }
 //position
-void Model::setPosition(glm::vec3 model_position) {
+void Model::setPosition(const glm::vec3 model_position) {
 	position = model_position;
-	updateToWorld();
+	updateToWorldAndMesh();
 }
 glm::vec3 Model::getPosition() const {
 	return position;
 }
 
 //orientation
-void Model::setOrientation(glm::mat4 model_orientation) {
+void Model::setOrientation(const glm::mat4 model_orientation) {
 	orientation = model_orientation;
-	updateToWorld();
+	updateToWorldAndMesh();
 }
 glm::mat4 Model::getOrientation() const {
 	return orientation;
 }
 
 //scale
-void Model::setScale(glm::vec3 model_scale) {
+void Model::setScale(const glm::vec3 model_scale) {
 	scale = model_scale;
-	updateToWorld();
+	updateToWorldAndMesh();
 }
 glm::vec3 Model::getScale() const {
 	return scale;
@@ -120,7 +128,20 @@ glm::mat3 Model::getToWorld3x3() const{
 }
 
 //Private 
-void Model::updateToWorld() {
+void Model::updateToWorldAndMesh() {
+
+	//update toWorld and toWorld3x3 matrix
 	toWorld = glm::translate(glm::mat4(1.0f), position) * orientation * glm::scale(glm::mat4(1.0f), scale);
 	toWorld3x3 = glm::transpose(glm::inverse(toWorld));
+
+	//loop through mesh and update vertices to reflect toWorld transformation
+	for (unsigned int i = 0; i < vertices.size(); ++i) {
+		if(vertices.at(i) != NULL){
+			vertices.at(i)->position = toWorld * glm::vec4(rawVertices.at(i)->position, 1);
+			vertices.at(i)->setNormal(toWorld3x3 * rawVertices.at(i)->getNormal());
+		}
+		else{
+			cerr << "Model: trying to access vertex from vertices array, but pointer is NULL" << endl;
+		}
+	}
 }

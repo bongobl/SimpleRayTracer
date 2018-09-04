@@ -1,6 +1,6 @@
 #include "../include/Camera.h"
 #include "../include/App.h"
-glm::vec3 Camera::position = glm::vec3(500, 30, 300);
+glm::vec3 Camera::position = glm::vec3(500, 30, -300);
 glm::mat4 Camera::orientation = glm::inverse(glm::lookAt(glm::vec3(0, 0, 0), -1.0f * position, glm::vec3(0, 1, 0)));
 
 float Camera::fieldOfView = glm::radians(30.0f);

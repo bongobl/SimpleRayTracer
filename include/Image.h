@@ -38,8 +38,8 @@ public:
 	
 	void setSolidColor(glm::vec3 color);
 	void setPixel(int x_coord, int y_coord, glm::vec3 color);
-	void exportPNG(std::string image_name);
-	int getMode();
+	void exportPNG(std::string image_name) const;
+	int getMode() const;
 	
 	glm::vec3 sample(glm::vec2 param) const;
 

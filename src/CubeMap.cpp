@@ -13,7 +13,7 @@ CubeMap::CubeMap(Image right_face, Image left_face, Image top_face, Image bottom
 	backFace = back_face;
 }
 
-glm::vec3 CubeMap::sample(glm::vec3 param){
+glm::vec3 CubeMap::sample(glm::vec3 param) const{
 
 	int toSampleID;
 	float uParam,vParam;
@@ -96,6 +96,6 @@ glm::vec3 CubeMap::sample(glm::vec3 param){
 
 //private helpers
 
-float CubeMap::paramaterized(float raw){
+float CubeMap::paramaterized(float raw) const{
 	return raw / 2 + 0.5f;
 }

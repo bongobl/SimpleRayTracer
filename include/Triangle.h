@@ -8,9 +8,9 @@
 using namespace std;
 class Triangle{
 public:
-	Vertex v1, v2, v3;
+	Vertex *v1, *v2, *v3;
 
-	Triangle(Vertex v1_, Vertex v2_, Vertex v3_);
+	Triangle(Vertex* v1_, Vertex* v2_, Vertex* v3_);
 	~Triangle();
 	glm::vec3 getFaceNormal() const;
 	

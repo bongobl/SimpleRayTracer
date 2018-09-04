@@ -66,7 +66,7 @@ bool Ray::intersectTriangle(const Triangle& triangle, glm::vec3& intersection) c
 
 	glm::vec3 n =  triangle.getFaceNormal();
 	glm::vec3 dir = glm::normalize(direction);
-	float d = glm::dot(n, triangle.v1.position);
+	float d = glm::dot(n, triangle.v1->position);
 
 	float t = (d - glm::dot(n, origin)) / glm::dot(n,dir);
 
@@ -79,17 +79,18 @@ bool Ray::intersectTriangle(const Triangle& triangle, glm::vec3& intersection) c
 	glm::vec3 Q = origin + t * dir;
 
 	//run through conclusive cases of intersection point out of triangle
-	if(glm::dot(glm::cross(triangle.v2.position - triangle.v1.position, Q - triangle.v1.position), n) < -EDGE_BIAS){
+	if(glm::dot(glm::cross(triangle.v2->position - triangle.v1->position, Q - triangle.v1->position), n) < -EDGE_BIAS){
 		return false;
 	}
-	if(glm::dot(glm::cross(triangle.v3.position - triangle.v2.position, Q - triangle.v2.position), n) < -EDGE_BIAS){
+	if(glm::dot(glm::cross(triangle.v3->position - triangle.v2->position, Q - triangle.v2->position), n) < -EDGE_BIAS){
 		return false;
 	}
-	if(glm::dot(glm::cross(triangle.v1.position - triangle.v3.position, Q - triangle.v3.position), n) < -EDGE_BIAS){
+	if(glm::dot(glm::cross(triangle.v1->position - triangle.v3->position, Q - triangle.v3->position), n) < -EDGE_BIAS){
 		return false;
 	}
 
 	//intersection lies on triangle, successful ray hit
 	intersection = Q;
+
 	return true;
 }
