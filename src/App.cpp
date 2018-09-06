@@ -35,6 +35,7 @@ void App::init() {
 	simpleModel.setOrientation(glm::rotate(glm::mat4(1.0f), glm::radians(55.0f), glm::vec3(2, 4, -1)));
 	simpleModel.setPosition(glm::vec3(-250, -15, 150));
 
+
 }
 
 void App::dispose() {

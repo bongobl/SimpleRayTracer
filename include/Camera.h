@@ -10,6 +10,8 @@ struct Camera{
 	static glm::vec3 position;
 	static glm::mat4 orientation;
 
+	enum projMode{ORTHO, PERSPECTIVE};
+	static int projectionMode;
 	static float fieldOfView;
 	static Ray getRay(int pixelXCoord, int pixelYCoord);
 };

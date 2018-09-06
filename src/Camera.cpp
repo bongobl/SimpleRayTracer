@@ -1,9 +1,12 @@
 #include "../include/Camera.h"
 #include "../include/App.h"
+
+//init static camera fields
 glm::vec3 Camera::position = glm::vec3(500, 30, -300);
 glm::mat4 Camera::orientation = glm::inverse(glm::lookAt(glm::vec3(0, 0, 0), -1.0f * position, glm::vec3(0, 1, 0)));
-
+int Camera::projectionMode = PERSPECTIVE;
 float Camera::fieldOfView = glm::radians(30.0f);
+
 
 Ray Camera::getRay(int pixelXCoord, int pixelYCoord) {
 
@@ -14,16 +17,18 @@ Ray Camera::getRay(int pixelXCoord, int pixelYCoord) {
 	
 	Ray ray;
 
-	//Ortho Ray
-	//ray.origin.x = ((float)pixelXCoord / OUTPUT_WIDTH) * screenWidth - (screenWidth / 2);
-	//ray.origin.y = ((float)(OUTPUT_HEIGHT - pixelYCoord) / OUTPUT_HEIGHT) * screenHeight - (screenHeight / 2);
-	//ray.origin.z = 5000;
+	if(projectionMode == ORTHO){
+	
+		ray.origin.x = ((float)pixelXCoord / OUTPUT_WIDTH) * screenWidth - (screenWidth / 2);
+		ray.origin.y = ((float)(OUTPUT_HEIGHT - pixelYCoord) / OUTPUT_HEIGHT) * screenHeight - (screenHeight / 2);
+		ray.origin.z = 5000;
+	}else{
 
-	//Perspective Ray
-	ray.direction.z = -1000;
-	ray.direction.x = ((float)pixelXCoord / OUTPUT_WIDTH) * screenWidth - (screenWidth / 2);
-	ray.direction.y = ((float)(OUTPUT_HEIGHT - pixelYCoord) / OUTPUT_HEIGHT) * screenHeight - (screenHeight / 2);
-
+		ray.direction.z = -1000;
+		ray.direction.x = ((float)pixelXCoord / OUTPUT_WIDTH) * screenWidth - (screenWidth / 2);
+		ray.direction.y = ((float)(OUTPUT_HEIGHT - pixelYCoord) / OUTPUT_HEIGHT) * screenHeight - (screenHeight / 2);
+	}
+	
 	//Move basid on camera matrix
 	glm::mat4 cameraMatrix = glm::translate(glm::mat4(1.0f),position) * orientation;
 	ray.origin = cameraMatrix * glm::vec4(ray.origin, 1);

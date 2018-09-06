@@ -28,3 +28,32 @@ Vertex& Vertex::operator=(const Vertex& other){
 	texCoord = other.texCoord;
 	return *this;
 }
+
+bool Vertex::operator<(const Vertex& other) const{
+
+	//compare based on position
+	if(position.x != other.position.x){
+		return position.x < other.position.x;
+	}else if(position.y != other.position.y){
+		return position.y < other.position.y;
+	}else if(position.z != other.position.z){
+		return position.z < other.position.z;
+	}
+
+	//texCoord
+	if(texCoord.x != other.texCoord.x){
+		return texCoord.x < other.texCoord.x;
+	}else if(texCoord.y != other.texCoord.y){
+		return texCoord.y < other.texCoord.y;
+	}
+
+	//compare based on normal
+	if(normal.x != other.normal.x){
+		return normal.x < other.normal.x;
+	}else if(normal.y != other.normal.y){
+		return normal.y < other.normal.y;
+	}else if(normal.z != other.normal.z){
+		return normal.z < other.normal.z;
+	}
+	return false;
+}

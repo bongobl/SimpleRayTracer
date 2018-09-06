@@ -19,5 +19,6 @@ public:
 	glm::vec3 getNormal() const;
 
 	Vertex& operator=(const Vertex& other);
+	bool operator<(const Vertex& other) const;
 
 };
