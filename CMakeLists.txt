@@ -11,12 +11,14 @@ set(INCLUDE_FILES
 	"${INCLUDE_DIRECTORY}/Image.h"
 	"${INCLUDE_DIRECTORY}/App.h"
 	"${INCLUDE_DIRECTORY}/Model.h"
+	"${INCLUDE_DIRECTORY}/MeshPool.h"
 	"${INCLUDE_DIRECTORY}/Ray.h"
 	"${INCLUDE_DIRECTORY}/Triangle.h"
 	"${INCLUDE_DIRECTORY}/Vertex.h"
 	"${INCLUDE_DIRECTORY}/Material.h"
 	"${INCLUDE_DIRECTORY}/CubeMap.h"
 	"${INCLUDE_DIRECTORY}/Camera.h"
+	"${INCLUDE_DIRECTORY}/RenderUtils.h"
 )
 
 set(INCLUDE_DIRECTORIES
@@ -33,12 +35,15 @@ set(SOURCE_FILES
 	"${SOURCE_DIRECTORY}/App.cpp"
 	"${SOURCE_DIRECTORY}/Image.cpp"
 	"${SOURCE_DIRECTORY}/Model.cpp"
+	"${SOURCE_DIRECTORY}/MeshPool.cpp"
 	"${SOURCE_DIRECTORY}/Ray.cpp"
 	"${SOURCE_DIRECTORY}/Triangle.cpp"
 	"${SOURCE_DIRECTORY}/Vertex.cpp"
 	"${SOURCE_DIRECTORY}/Material.cpp"
 	"${SOURCE_DIRECTORY}/CubeMap.cpp"
 	"${SOURCE_DIRECTORY}/Camera.cpp"
+	"${SOURCE_DIRECTORY}/RenderUtils.cpp"
+
 )
 
 set(RESOURCE_DIRECTORIES

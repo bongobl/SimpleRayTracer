@@ -7,23 +7,26 @@
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "../include/Camera.h"
-#include "../include/Ray.h"
-#include "../include/Model.h"
-#include "../include/Image.h"
-#include "../include/CubeMap.h"
-#include "../include/Camera.h"
-
+#include "Camera.h"
+#include "Ray.h"
+#include "Model.h"
+#include "Image.h"
+#include "CubeMap.h"
+#include "Camera.h"
+#include "RenderUtils.h"
+#include "MeshPool.h"
 
 const int OUTPUT_WIDTH = 1280;
 const int OUTPUT_HEIGHT = 720;
 const int NUM_THREADS = 90;
 
 class App{
+
 	Image rockTexture;
 	Model simpleModel;
 	Image outputImage;
 	CubeMap environmentMap;
+
 	std::vector<Model*> allModels;
 
 	
@@ -43,5 +46,4 @@ private:
 
 	void calcPixelColor(const Model& model, int pixelX, int pixelY);
 	glm::vec3 refractedColor(const Model& model, Ray ray);
-	glm::vec3 refract(glm::vec3 incident, glm::vec3 normal, float nVacuum, float nMaterial);
 };

@@ -52,7 +52,7 @@ public:
 	glm::mat3 getToWorld3x3() const;
 
 	friend struct Ray;
-
+	friend class MeshPool;
 private:
 
 	//update model toWorld matrices to reflect position, orientation and scale
