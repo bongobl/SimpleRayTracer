@@ -24,11 +24,12 @@ class App{
 
 	Image rockTexture;
 	Model simpleModel;
+	Model simpleModel2;
+
 	Image outputImage;
 	CubeMap environmentMap;
 
-	std::vector<Model*> allModels;
-
+	MeshPool meshPool;
 	
 public:
 
@@ -44,6 +45,6 @@ private:
 	void threadTask(int startRow);
 	void renderRow(int yVal);
 
-	void calcPixelColor(const Model& model, int pixelX, int pixelY);
-	glm::vec3 refractedColor(const Model& model, Ray ray);
+	void calcPixelColor(int pixelX, int pixelY);
+	glm::vec3 refractedColor(Ray ray);
 };

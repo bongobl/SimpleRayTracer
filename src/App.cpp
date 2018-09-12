@@ -1,6 +1,8 @@
 #include "../include/App.h"
 
-App::App() : simpleModel("resources/ObjModels/FilletCube.obj"){
+App::App() :	simpleModel("resources/ObjModels/FilletCube.obj"),
+				simpleModel2("resources/OBJModels/Ico.obj")
+{
 	
 }
 
@@ -19,25 +21,30 @@ void App::init() {
 
 	//create material
 	Material basicMaterial;
-	basicMaterial.specular = glm::vec3(1, 1, 1);
 	basicMaterial.surfaceTexture = rockTexture;
 	basicMaterial.surfaceTextureStrength = 0.0f;
 	basicMaterial.refractiveIndex = 1.03f;
 	basicMaterial.reflectToRefractParam = 0.8f;
 
 
-	//assign material to model
+	//assign material to simpleModel
 	simpleModel.material = basicMaterial;
 
-	allModels.push_back(&simpleModel);
+	//simpleModel2
+	simpleModel2.material.diffuse = glm::vec3(1, 0, 0);
+
+	//enter all models
+	meshPool.addModel(&simpleModel);
+	meshPool.addModel(&simpleModel2);
 
 	//create output image texture
 	outputImage.setAsWrite(OUTPUT_WIDTH, OUTPUT_HEIGHT);
 
 	//transform model
-	simpleModel.setOrientation(glm::rotate(glm::mat4(1.0f), glm::radians(55.0f), glm::vec3(2, 4, -1)));
-	simpleModel.setPosition(glm::vec3(-250, -15, 150));
-
+	simpleModel.setOrientation(glm::rotate(glm::mat4(1.0f), glm::radians(31.0f), glm::vec3(2, 4, -1)));
+	simpleModel.setPosition(glm::vec3(-200, 0, 0));
+	simpleModel2.setScale(glm::vec3(1.5f, 1.5f, 1.5f));
+	simpleModel2.setPosition(glm::vec3(200, 0, 0));
 
 }
 
@@ -87,37 +94,36 @@ void App::threadTask(int startRow){
 }
 void App::renderRow(int yVal){
 
-	for (unsigned int currModel = 0; currModel < allModels.size(); ++currModel) {
 
-		for (int x = 0; x < OUTPUT_WIDTH; ++x) {
 
-			calcPixelColor(*allModels[currModel], x, yVal);
+	for (int x = 0; x < OUTPUT_WIDTH; ++x) {
 
-		}//For Each Pixel
+		calcPixelColor(x, yVal);
 
-	}//For each Model
+	}//For Each Pixel
+
 
 }//End render row	
 
-void App::calcPixelColor(const Model& model, int pixelX, int pixelY) {
+void App::calcPixelColor(int pixelX, int pixelY) {
 	//Perform lighting calculations for this particular pixel
 
 	//interpolated vertex attributes
 	glm::vec3 fragPosition;
 	glm::vec2 fragTexCoord;
 	glm::vec3 fragNormal;
-
+	Model* currModel = NULL;
 	//get ray
 	Ray ray = Camera::getRay(pixelX, pixelY);
 
 	//fire ray into scene to find color for pixel
-	if (ray.intersectModel(model, fragPosition, fragTexCoord, fragNormal)) {
+	if (ray.intersectMesh(meshPool, fragPosition, fragTexCoord, fragNormal, currModel)) {
 
 		//define light
-		glm::vec3 directionalLight = glm::normalize(glm::vec3(-1, -1, -1));
+		glm::vec3 directionalLight = glm::normalize(glm::vec3(1, -1, -1));
 
 		//get current model material
-		Material currMaterial = model.material;
+		Material currMaterial = currModel->material;
 
 		//sample surface texture
 		glm::vec3 surfaceTextureColor = glm::vec3(1, 1, 1) - (currMaterial.surfaceTextureStrength *
@@ -128,8 +134,8 @@ void App::calcPixelColor(const Model& model, int pixelX, int pixelY) {
 		glm::vec3 envReflectionColor = glm::vec3(1, 1, 1) - (currMaterial.envReflectionStrength *
 			(glm::vec3(1, 1, 1) - environmentMap.sample(cubeMapSampler)));
 
-		//calculate refraction
-		glm::vec3 refractionColor = refractedColor(model, ray);
+		//calculate refraction (not used yet)
+		glm::vec3 refractionColor = refractedColor(ray);
 
 		//calculate diffuse
 		glm::vec3 diffuseComponent = max(glm::dot(fragNormal, -1.0f * directionalLight), 0.0f) * currMaterial.diffuse;
@@ -169,24 +175,27 @@ void App::calcPixelColor(const Model& model, int pixelX, int pixelY) {
 		outputImage.setPixel(pixelX, pixelY, environmentMap.sample(ray.direction));
 	}
 }
-glm::vec3 App::refractedColor(const Model& model, Ray ray) {
+glm::vec3 App::refractedColor(Ray ray) {
 
 	Ray finalRay = ray;
 
 	glm::vec3 fragPosition;
 	glm::vec2 fragTexCoord;
 	glm::vec3 fragNormal;
+	Model* hitModel = NULL;
 
-	float matRefIndex = model.material.refractiveIndex;
+	float matRefIndex;
 
 	//go in model
-	if (finalRay.intersectModel(model, fragPosition, fragTexCoord, fragNormal)) {
+	if (finalRay.intersectMesh(meshPool, fragPosition, fragTexCoord, fragNormal, hitModel)) {
 		finalRay.origin = fragPosition;
+		matRefIndex = hitModel->material.refractiveIndex;
 		finalRay.direction = RenderUtils::refract(finalRay.direction, fragNormal, 1, matRefIndex);
 	}
 	//go out model
-	if (finalRay.intersectModel(model, fragPosition, fragTexCoord, fragNormal)) {
+	if (finalRay.intersectMesh(meshPool, fragPosition, fragTexCoord, fragNormal, hitModel)) {
 		finalRay.origin = fragPosition;
+		matRefIndex = hitModel->material.refractiveIndex;
 		finalRay.direction = RenderUtils::refract(finalRay.direction, fragNormal, 1, matRefIndex);
 	}
 

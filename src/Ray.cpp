@@ -12,8 +12,8 @@ Ray::~Ray(){
 
 }
 
-bool Ray::intersectModel(const Model& model, glm::vec3& fragPosition, glm::vec2& fragTexCoord, glm::vec3& fragNormal) const{
-
+bool Ray::intersectMesh(const MeshPool& meshPool, glm::vec3& fragPosition, glm::vec2& fragTexCoord, glm::vec3& fragNormal, Model* &modelPtr) const {
+	
 	//was a face hit
 	bool hitFace = false;
 
@@ -21,13 +21,13 @@ bool Ray::intersectModel(const Model& model, glm::vec3& fragPosition, glm::vec2&
 	float minDist;
 
 	//loop through all faces in model
-	for(unsigned int currFace = 0; currFace < model.faces.size(); ++currFace){
+	for (unsigned int currFace = 0; currFace < meshPool.allFaces.size(); ++currFace) {
 
 		//used to find intersection position if ray hits polygon
 		glm::vec3 currIntersection;
 
 		//if ray hits triangle
-		if(intersectTriangle(model.faces.at(currFace), currIntersection)){
+		if (intersectTriangle(meshPool.allFaces.at(currFace), currIntersection)) {
 
 			float currDist = glm::length(currIntersection - origin);
 
@@ -35,10 +35,11 @@ bool Ray::intersectModel(const Model& model, glm::vec3& fragPosition, glm::vec2&
 				continue;
 			}
 			//if first time we hit a face, OR we hit a new closest face
-			if(!hitFace || currDist < minDist){
+			if (!hitFace || currDist < minDist) {
 				fragPosition = currIntersection;
-				fragNormal = model.faces.at(currFace).interpNormal(currIntersection);
-				fragTexCoord = model.faces.at(currFace).interpTexCoord(currIntersection);
+				fragNormal = meshPool.allFaces.at(currFace).interpNormal(currIntersection);
+				fragTexCoord = meshPool.allFaces.at(currFace).interpTexCoord(currIntersection);
+				modelPtr = meshPool.allFaces.at(currFace).getModel();
 				minDist = currDist;
 			}
 
