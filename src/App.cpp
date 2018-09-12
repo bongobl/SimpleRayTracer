@@ -44,7 +44,7 @@ void App::init() {
 	simpleModel.setOrientation(glm::rotate(glm::mat4(1.0f), glm::radians(31.0f), glm::vec3(2, 4, -1)));
 	simpleModel.setPosition(glm::vec3(-200, 0, 0));
 	simpleModel2.setScale(glm::vec3(1.5f, 1.5f, 1.5f));
-	simpleModel2.setPosition(glm::vec3(200, 0, 0));
+	simpleModel2.setPosition(glm::vec3(50, 0, 300));
 
 }
 
