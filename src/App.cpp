@@ -23,10 +23,13 @@ void App::init() {
 	basicMaterial.surfaceTexture = rockTexture;
 	basicMaterial.surfaceTextureStrength = 0.0f;
 	basicMaterial.refractiveIndex = 1.03f;
-	basicMaterial.reflectToRefractParam = 0.8f;
+	basicMaterial.reflectToRefractParam = 0.0f;
+
 
 	//assign material to model
 	simpleModel.material = basicMaterial;
+
+	allModels.push_back(&simpleModel);
 
 	//create output image texture
 	outputImage.setAsWrite(OUTPUT_WIDTH, OUTPUT_HEIGHT);
@@ -57,8 +60,7 @@ void App::dispose() {
 void App::renderToImage(){
 	
 	cout << "Rendering Image" << endl;
-	outputImage.setSolidColor(glm::vec3(0, 0.5f, 0.5f));
-	renderModel(simpleModel);	
+	renderMesh();	
 }
 
 void App::exportImage(std::string outputFileName) {
@@ -69,92 +71,108 @@ void App::exportImage(std::string outputFileName) {
 
 
 //Private Helpers
-void App::renderModel(const Model& model) {
+void App::renderMesh() {
 	std::vector<std::thread> threads;
 	for (unsigned int i = 0; i < NUM_THREADS; ++i) {
-		threads.push_back(std::thread(&App::threadTask, this, i, std::ref(model)));
+		threads.push_back(std::thread(&App::threadTask, this, i));
 	}
 	for (unsigned int i = 0; i < NUM_THREADS; ++i) {
 		threads[i].join();
 	}
 }
-void App::threadTask(int startRow, const Model& model){
+void App::threadTask(int startRow){
 	for (int currRow = startRow; currRow < OUTPUT_HEIGHT; currRow += NUM_THREADS) {
-		renderRow(currRow, model);
+		renderRow(currRow);
 	}
 }
-void App::renderRow(int yVal, const Model& model){
+void App::renderRow(int yVal){
 
 	glm::vec3 fragPosition;
 	glm::vec2 fragTexCoord;
 	glm::vec3 fragNormal;
 
-	for (int x = 0; x < OUTPUT_WIDTH; ++x) {
-		
-		//Perform lighting calculations for this particular pixel
+	for (unsigned int currModel = 0; currModel < allModels.size(); ++currModel) {
 
-		//get ray
-		Ray ray = Camera::getRay(x, yVal);
+		for (int x = 0; x < OUTPUT_WIDTH; ++x) {
 
-		//fire ray into scene to find color for pixel
-		if (ray.intersectModel(model, fragPosition, fragTexCoord, fragNormal)) {
+			calcPixelColor(*allModels[currModel], x, yVal);
 
-			//define light
-			glm::vec3 directionalLight = glm::normalize(glm::vec3(-1, -1, -1));
+		}//For Each Pixel
 
-			//sample surface texture
-			glm::vec3 surfaceTextureColor = glm::vec3(1, 1, 1) - (model.material.surfaceTextureStrength *
-				(glm::vec3(1, 1, 1) - model.material.surfaceTexture.sample(fragTexCoord)));
+	}//For each Model
 
-			//sample environment map
-			glm::vec3 cubeMapSampler = glm::reflect(ray.direction, fragNormal);
-			glm::vec3 envReflectionColor = glm::vec3(1, 1, 1) - (model.material.envReflectionStrength *
-				(glm::vec3(1, 1, 1) - environmentMap.sample(cubeMapSampler)));
-
-			//calculate refraction
-			glm::vec3 refractionColor = refractedColor(model, ray);
-
-			//calculate diffuse
-			glm::vec3 diffuseComponent = max(glm::dot(fragNormal, -1.0f * directionalLight),0.0f) * model.material.diffuse;
-
-			//calculate specular
-			glm::vec3 reflection = glm::reflect(directionalLight, fragNormal);
-			glm::vec3 toEye = glm::normalize(ray.origin - fragPosition);
-			glm::vec3 specularComponent = (float)pow(max(glm::dot(reflection, toEye), 0.0f), 20) * model.material.specular;
-
-			//calculate ambient
-			glm::vec3 ambientComponent = model.material.ambient;
-
-			//combine reflection components			
-			glm::vec3 totalReflectionColor = envReflectionColor * surfaceTextureColor * (diffuseComponent + specularComponent + ambientComponent);
-
-			
-			//define refLeft based on param and normal's relation to camera
-			float refLerp;
-			float normalDotFragToCam = glm::pow(glm::max(glm::dot(glm::normalize(ray.origin - fragPosition), fragNormal),0.0f), 0.7f);
-
-			if (model.material.reflectToRefractParam <= 0.5f) {
-				refLerp = 2 * model.material.reflectToRefractParam * normalDotFragToCam;
-			}
-			else {
-				refLerp = 1 - 2 *  (1 - model.material.reflectToRefractParam) * (1 - normalDotFragToCam);
-			}
-			//lerp between reflectivness and refractivness
-			glm::vec3 finalColor = model.material.color * ( (1 - refLerp) * totalReflectionColor + (refLerp) * refractionColor );
-	
-			//set image pixel value
-			outputImage.setPixel(x, yVal, finalColor);
-
-		}
-		else {
-
-			//don't use when rendering multiple objects, this will draw over previously rendered objects
-			outputImage.setPixel(x, yVal, environmentMap.sample(ray.direction));
-		}
-		
-	}
 }//End render row	
 
+void App::calcPixelColor(const Model& model, int pixelX, int pixelY) {
+	//Perform lighting calculations for this particular pixel
+
+	//interpolated vertex attributes
+	glm::vec3 fragPosition;
+	glm::vec2 fragTexCoord;
+	glm::vec3 fragNormal;
+
+	//get ray
+	Ray ray = Camera::getRay(pixelX, pixelY);
+
+	//fire ray into scene to find color for pixel
+	if (ray.intersectModel(model, fragPosition, fragTexCoord, fragNormal)) {
+
+		//define light
+		glm::vec3 directionalLight = glm::normalize(glm::vec3(-1, -1, -1));
+
+		//get current model material
+		Material currMaterial = model.material;
+
+		//sample surface texture
+		glm::vec3 surfaceTextureColor = glm::vec3(1, 1, 1) - (currMaterial.surfaceTextureStrength *
+			(glm::vec3(1, 1, 1) - currMaterial.surfaceTexture.sample(fragTexCoord)));
+
+		//sample environment map
+		glm::vec3 cubeMapSampler = glm::reflect(ray.direction, fragNormal);
+		glm::vec3 envReflectionColor = glm::vec3(1, 1, 1) - (currMaterial.envReflectionStrength *
+			(glm::vec3(1, 1, 1) - environmentMap.sample(cubeMapSampler)));
+
+		//calculate refraction
+		glm::vec3 refractionColor = refractedColor(model, ray);
+
+		//calculate diffuse
+		glm::vec3 diffuseComponent = max(glm::dot(fragNormal, -1.0f * directionalLight), 0.0f) * currMaterial.diffuse;
+
+		//calculate specular
+		glm::vec3 reflection = glm::reflect(directionalLight, fragNormal);
+		glm::vec3 toEye = glm::normalize(ray.origin - fragPosition);
+		glm::vec3 specularComponent = (float)pow(max(glm::dot(reflection, toEye), 0.0f), 20) * currMaterial.specular;
+
+		//calculate ambient
+		glm::vec3 ambientComponent = currMaterial.ambient;
+
+		//combine reflection components			
+		glm::vec3 totalReflectionColor = envReflectionColor * surfaceTextureColor * (diffuseComponent + specularComponent + ambientComponent);
+
+
+		//define refLeft based on param and normal's relation to camera
+		float refLerp;
+		float normalDotFragToCam = glm::pow(glm::max(glm::dot(glm::normalize(ray.origin - fragPosition), fragNormal), 0.0f), 0.7f);
+
+		if (currMaterial.reflectToRefractParam <= 0.5f) {
+			refLerp = 2 * currMaterial.reflectToRefractParam * normalDotFragToCam;
+		}
+		else {
+			refLerp = 1 - 2 * (1 - currMaterial.reflectToRefractParam) * (1 - normalDotFragToCam);
+		}
+		//lerp between reflectivness and refractivness
+		glm::vec3 finalColor = currMaterial.color * ((1 - refLerp) * totalReflectionColor + (refLerp)* refractionColor);
+
+		//set image pixel value
+		outputImage.setPixel(pixelX, pixelY, finalColor);
+
+	}
+	else {
+
+		//don't use when rendering multiple objects, this will draw over previously rendered objects
+		outputImage.setPixel(pixelX, pixelY, environmentMap.sample(ray.direction));
+	}
+}
 glm::vec3 App::refractedColor(const Model& model, Ray ray) {
 
 	Ray finalRay = ray;

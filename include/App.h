@@ -24,6 +24,7 @@ class App{
 	Model simpleModel;
 	Image outputImage;
 	CubeMap environmentMap;
+	std::vector<Model*> allModels;
 
 	
 public:
@@ -36,9 +37,11 @@ public:
 
 
 private:
-	void renderModel(const Model& model);
-	void threadTask(int startRow, const Model& model);
-	void renderRow(int yVal, const Model& model);	
+	void renderMesh();
+	void threadTask(int startRow);
+	void renderRow(int yVal);
+
+	void calcPixelColor(const Model& model, int pixelX, int pixelY);
 	glm::vec3 refractedColor(const Model& model, Ray ray);
 	glm::vec3 refract(glm::vec3 incident, glm::vec3 normal, float nVacuum, float nMaterial);
 };
