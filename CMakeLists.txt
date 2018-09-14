@@ -49,7 +49,6 @@ set(SOURCE_FILES
 set(RESOURCE_DIRECTORIES
     "resources/"
 )
-add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 add_executable(SimpleRayTracer "${INCLUDE_FILES}" "${SOURCE_FILES}")
 target_include_directories(SimpleRayTracer PRIVATE "${INCLUDE_DIRECTORIES}")
 

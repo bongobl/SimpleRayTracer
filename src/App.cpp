@@ -45,6 +45,7 @@ void App::init() {
 	simpleModel.setPosition(glm::vec3(-200, 0, 0));
 	simpleModel2.setScale(glm::vec3(1.5f, 1.5f, 1.5f));
 	simpleModel2.setPosition(glm::vec3(50, 0, 300));
+	simpleModel2.setOrientation(glm::rotate(glm::mat4(1.0f), glm::radians(-54.0f), glm::vec3(7, 1, 3)));
 
 }
 
@@ -98,14 +99,16 @@ void App::renderRow(int yVal){
 
 	for (int x = 0; x < OUTPUT_WIDTH; ++x) {
 
-		calcPixelColor(x, yVal);
+		Ray rayFromCamera = Camera::getRay(x, yVal);
+
+		calcPixelColor(rayFromCamera, x, yVal);
 
 	}//For Each Pixel
 
 
 }//End render row	
 
-void App::calcPixelColor(int pixelX, int pixelY) {
+void App::calcPixelColor(Ray ray, int pixelX, int pixelY) {
 	//Perform lighting calculations for this particular pixel
 
 	//interpolated vertex attributes
@@ -113,8 +116,6 @@ void App::calcPixelColor(int pixelX, int pixelY) {
 	glm::vec2 fragTexCoord;
 	glm::vec3 fragNormal;
 	Model* currModel = NULL;
-	//get ray
-	Ray ray = Camera::getRay(pixelX, pixelY);
 
 	//fire ray into scene to find color for pixel
 	if (ray.intersectMesh(meshPool, fragPosition, fragTexCoord, fragNormal, currModel)) {

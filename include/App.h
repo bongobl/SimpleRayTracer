@@ -45,6 +45,6 @@ private:
 	void threadTask(int startRow);
 	void renderRow(int yVal);
 
-	void calcPixelColor(int pixelX, int pixelY);
+	void calcPixelColor(Ray ray, int pixelX, int pixelY);
 	glm::vec3 refractedColor(Ray ray);
 };
