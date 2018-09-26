@@ -5,7 +5,6 @@
 
 #include "Triangle.h"
 #include "Model.h"
-#include "MeshPool.h"
 struct Ray{
 
 	glm::vec3 origin;
@@ -16,6 +15,6 @@ public:
 	Ray(glm::vec3 origin_, glm::vec3 direction_);
 	~Ray();
 
-	bool intersectMesh(const MeshPool& meshPool, glm::vec3& fragPosition, glm::vec2& fragTexCoord, glm::vec3& fragNormal, Model* &modelPtr) const;
+	bool intersectMesh(const std::vector<Model*> &allModels, glm::vec3& fragPosition, glm::vec2& fragTexCoord, glm::vec3& fragNormal, Model* &modelPtr) const;
 	bool intersectTriangle(const Triangle& triangle, glm::vec3& intersection) const;
 };

@@ -12,7 +12,7 @@ Ray::~Ray(){
 
 }
 
-bool Ray::intersectMesh(const MeshPool& meshPool, glm::vec3& fragPosition, glm::vec2& fragTexCoord, glm::vec3& fragNormal, Model* &modelPtr) const {
+bool Ray::intersectMesh(const std::vector<Model*> &allModels, glm::vec3& fragPosition, glm::vec2& fragTexCoord, glm::vec3& fragNormal, Model* &modelPtr) const {
 	
 	//was a face hit
 	bool hitFace = false;
@@ -20,30 +20,36 @@ bool Ray::intersectMesh(const MeshPool& meshPool, glm::vec3& fragPosition, glm::
 	//distance to running closest face
 	float minDist;
 
-	//loop through all faces in model
-	for (unsigned int currFace = 0; currFace < meshPool.allFaces.size(); ++currFace) {
+	//loop through all models to check if ray hits it
+	for(auto currModel = allModels.begin(); currModel != allModels.end(); ++currModel ){
 
-		//used to find intersection position if ray hits polygon
-		glm::vec3 currIntersection;
+		//loop through all triangles of current model to see if ray hits it
+		for(auto currFace = (*currModel)->faces.begin(); currFace != (*currModel)->faces.end(); ++currFace){
 
-		//if ray hits triangle
-		if (intersectTriangle(meshPool.allFaces.at(currFace), currIntersection)) {
+			//used to find intersection position if ray hits polygon
+			glm::vec3 currIntersection;
 
-			float currDist = glm::length(currIntersection - origin);
+			//if ray hits triangle
+			if (intersectTriangle(*currFace, currIntersection)) {
 
-			if (currDist <= FACE_BIAS) {
-				continue;
+				float currDist = glm::length(currIntersection - origin);
+
+				//if ray origin is very close to triangle it hits, pretend it didn't hit it
+				if (currDist <= FACE_BIAS) {
+					continue;
+				}
+				
+				//if first time we hit a face, OR we hit a new closest face
+				if (!hitFace || currDist < minDist) {
+					fragPosition = currIntersection;
+					fragNormal = currFace->interpNormal(currIntersection);
+					fragTexCoord = currFace->interpTexCoord(currIntersection);
+					modelPtr = *currModel;
+					minDist = currDist;
+				}
+
+				hitFace = true;
 			}
-			//if first time we hit a face, OR we hit a new closest face
-			if (!hitFace || currDist < minDist) {
-				fragPosition = currIntersection;
-				fragNormal = meshPool.allFaces.at(currFace).interpNormal(currIntersection);
-				fragTexCoord = meshPool.allFaces.at(currFace).interpTexCoord(currIntersection);
-				modelPtr = meshPool.allFaces.at(currFace).getModel();
-				minDist = currDist;
-			}
-
-			hitFace = true;
 		}
 	}
 

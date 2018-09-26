@@ -21,6 +21,7 @@ void App::init() {
 
 	//create material
 	Material basicMaterial;
+	basicMaterial.color = glm::vec3(0.5f,1,0.5f);
 	basicMaterial.surfaceTexture = rockTexture;
 	basicMaterial.surfaceTextureStrength = 0.0f;
 	basicMaterial.refractiveIndex = 1.03f;
@@ -34,18 +35,21 @@ void App::init() {
 	simpleModel2.material.diffuse = glm::vec3(1, 0, 0);
 
 	//enter all models
-	meshPool.addModel(&simpleModel);
-	meshPool.addModel(&simpleModel2);
+	allModels.push_back(&simpleModel);
+	allModels.push_back(&simpleModel2);
 
 	//create output image texture
 	outputImage.setAsWrite(OUTPUT_WIDTH, OUTPUT_HEIGHT);
 
-	//transform model
-	simpleModel.setOrientation(glm::rotate(glm::mat4(1.0f), glm::radians(31.0f), glm::vec3(2, 4, -1)));
+	//transform models
+	simpleModel.setOrientation(glm::rotate(glm::mat4(1.0f), glm::radians(41.0f), glm::vec3(2, 4, -1)));
 	simpleModel.setPosition(glm::vec3(-200, 0, 0));
 	simpleModel2.setScale(glm::vec3(1.5f, 1.5f, 1.5f));
 	simpleModel2.setPosition(glm::vec3(50, 0, 300));
 	simpleModel2.setOrientation(glm::rotate(glm::mat4(1.0f), glm::radians(-54.0f), glm::vec3(7, 1, 3)));
+
+	//define light
+	directionalLight.setDirection(glm::vec3(1,-1,-1));
 
 }
 
@@ -118,10 +122,8 @@ void App::calcPixelColor(Ray ray, int pixelX, int pixelY) {
 	Model* currModel = NULL;
 
 	//fire ray into scene to find color for pixel
-	if (ray.intersectMesh(meshPool, fragPosition, fragTexCoord, fragNormal, currModel)) {
+	if (ray.intersectMesh(allModels, fragPosition, fragTexCoord, fragNormal, currModel)) {
 
-		//define light
-		glm::vec3 directionalLight = glm::normalize(glm::vec3(1, -1, -1));
 
 		//get current model material
 		Material currMaterial = currModel->material;
@@ -139,10 +141,10 @@ void App::calcPixelColor(Ray ray, int pixelX, int pixelY) {
 		glm::vec3 refractionColor = refractedColor(ray);
 
 		//calculate diffuse
-		glm::vec3 diffuseComponent = max(glm::dot(fragNormal, -1.0f * directionalLight), 0.0f) * currMaterial.diffuse;
+		glm::vec3 diffuseComponent = max(glm::dot(fragNormal, -1.0f * directionalLight.getDirection()), 0.0f) * currMaterial.diffuse;
 
 		//calculate specular
-		glm::vec3 reflection = glm::reflect(directionalLight, fragNormal);
+		glm::vec3 reflection = glm::reflect(directionalLight.getDirection(), fragNormal);
 		glm::vec3 toEye = glm::normalize(ray.origin - fragPosition);
 		glm::vec3 specularComponent = (float)pow(max(glm::dot(reflection, toEye), 0.0f), 20) * currMaterial.specular;
 
@@ -188,13 +190,13 @@ glm::vec3 App::refractedColor(Ray ray) {
 	float matRefIndex;
 
 	//go in model
-	if (finalRay.intersectMesh(meshPool, fragPosition, fragTexCoord, fragNormal, hitModel)) {
+	if (finalRay.intersectMesh(allModels, fragPosition, fragTexCoord, fragNormal, hitModel)) {
 		finalRay.origin = fragPosition;
 		matRefIndex = hitModel->material.refractiveIndex;
 		finalRay.direction = RenderUtils::refract(finalRay.direction, fragNormal, 1, matRefIndex);
 	}
 	//go out model
-	if (finalRay.intersectMesh(meshPool, fragPosition, fragTexCoord, fragNormal, hitModel)) {
+	if (finalRay.intersectMesh(allModels, fragPosition, fragTexCoord, fragNormal, hitModel)) {
 		finalRay.origin = fragPosition;
 		matRefIndex = hitModel->material.refractiveIndex;
 		finalRay.direction = RenderUtils::refract(finalRay.direction, fragNormal, 1, matRefIndex);

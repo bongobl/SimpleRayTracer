@@ -1,10 +1,9 @@
 #include "../include/Triangle.h"
 
-Triangle::Triangle(Vertex* v1_, Vertex* v2_, Vertex* v3_, Model* _model){
+Triangle::Triangle(Vertex* v1_, Vertex* v2_, Vertex* v3_){
 	v1 = v1_;
 	v2 = v2_;
 	v3 = v3_;
-	model = _model;
 }
 Triangle::~Triangle(){
 
@@ -38,8 +37,4 @@ glm::vec2 Triangle::interpTexCoord(glm::vec3 sample) const {
 	float weightV3 = glm::dot(faceNormal, glm::cross(v2->position - v1->position, sample - v1->position)) / denominator;
 
 	return weightV1 * v1->texCoord + weightV2 * v2->texCoord + weightV3 * v3->texCoord;
-}
-
-Model* Triangle::getModel() const {
-	return model;
 }

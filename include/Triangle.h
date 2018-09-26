@@ -9,16 +9,15 @@ using namespace std;
 class Model;
 
 class Triangle{
-	Model* model;
+
 public:
 	Vertex *v1, *v2, *v3;
 	
 
-	Triangle(Vertex* v1_, Vertex* v2_, Vertex* v3_, Model* _model);
+	Triangle(Vertex* v1_, Vertex* v2_, Vertex* v3_);
 	~Triangle();
 	glm::vec3 getFaceNormal() const;
 	
 	glm::vec3 interpNormal(glm::vec3 sample) const;
 	glm::vec2 interpTexCoord(glm::vec3 sample) const;
-	Model* getModel() const;
 };

@@ -7,6 +7,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "Light.h"
 #include "Camera.h"
 #include "Ray.h"
 #include "Model.h"
@@ -14,7 +15,6 @@
 #include "CubeMap.h"
 #include "Camera.h"
 #include "RenderUtils.h"
-#include "MeshPool.h"
 
 const int OUTPUT_WIDTH = 1280;
 const int OUTPUT_HEIGHT = 720;
@@ -29,7 +29,9 @@ class App{
 	Image outputImage;
 	CubeMap environmentMap;
 
-	MeshPool meshPool;
+	std::vector<Model*> allModels;
+
+	Light directionalLight;
 	
 public:
 

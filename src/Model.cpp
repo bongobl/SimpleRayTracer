@@ -54,7 +54,7 @@ Model::Model(string model_filename){
 		//Process Triangles
 		else if (currLine[0] == 'f' && currLine[1] == ' ') {
 			sscanf_s(currLine, "f %i/%i/%i %i/%i/%i %i/%i/%i", &v1, &n1, &t1, &v2, &n2, &t2, &v3, &n3, &t3);
-			faces.push_back( Triangle(vertices[v1 - 1], vertices[v2 - 1], vertices[v3 - 1], this));
+			faces.push_back( Triangle(vertices[v1 - 1], vertices[v2 - 1], vertices[v3 - 1]) );
 		}
 
 	}//END WHILE
