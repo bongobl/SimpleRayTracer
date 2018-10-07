@@ -14,12 +14,21 @@ struct Material{
 	glm::vec3 specular;
 	glm::vec3 ambient;
 
-
-	float surfaceTextureStrength;
-	float envReflectionStrength;
-	float refractiveIndex;
-	float reflectToRefractParam;
+	//surface texture
 	Image surfaceTexture;
+	float surfaceTextureStrength;
+
+	//Reflect New Rays
+	bool reflectNewRay;
+	float reflectRayStrength;
+
+	//Refract New Rays
+	bool refractNewRay;
+	float refractiveIndex;
+	
+	
+	//Blend all reflect/refract
+	float reflectToRefractParam;
 
 	Material();
 

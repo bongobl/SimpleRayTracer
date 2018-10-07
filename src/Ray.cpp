@@ -1,5 +1,5 @@
-#define EDGE_BIAS 0.006f	//when hitpoint on edge or point
-#define FACE_BIAS 0.05f
+#define EDGE_BIAS 0.006f	// when hitpoint on edge or point
+#define FACE_BIAS 0.046f	// when origin is very close to triangle
 #include "../include/Ray.h"
 
 Ray::Ray(): origin(glm::vec3(0,0,0)), direction(glm::vec3(0,0,-1)) {

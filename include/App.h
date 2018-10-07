@@ -19,12 +19,12 @@
 const int OUTPUT_WIDTH = 1280;
 const int OUTPUT_HEIGHT = 720;
 const int NUM_THREADS = 90;
+const int MAX_NUM_RAY_BOUNCES = 2;
 
 class App{
 
-	Image rockTexture;
-	Model simpleModel;
-	Model simpleModel2;
+	Model sphere;
+	Model ico;
 
 	Image outputImage;
 	CubeMap environmentMap;
@@ -47,6 +47,6 @@ private:
 	void threadTask(int startRow);
 	void renderRow(int yVal);
 
-	void calcPixelColor(Ray ray, int pixelX, int pixelY);
+	glm::vec3 getColorFromScene(Ray ray, int numBounces);
 	glm::vec3 refractedColor(Ray ray);
 };

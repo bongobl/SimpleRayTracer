@@ -8,7 +8,8 @@
 struct Ray{
 
 	glm::vec3 origin;
-	glm::vec3 direction;	
+
+	glm::vec3 direction;	//ray's direction doesn't need to be normalized since its lendth doesn't matter
 public:
 
 	Ray();
