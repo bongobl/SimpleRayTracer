@@ -33,11 +33,6 @@ bool Ray::intersectMesh(const std::vector<Model*> &allModels, glm::vec3& fragPos
 			if (intersectTriangle(*currFace, currIntersection)) {
 
 				float currDist = glm::length(currIntersection - origin);
-
-				//if ray origin is very close to triangle it hits, pretend it didn't hit it
-				if (currDist <= FACE_BIAS) {
-					continue;
-				}
 				
 				//if first time we hit a face, OR we hit a new closest face
 				if (!hitFace || currDist < minDist) {
@@ -77,14 +72,16 @@ bool Ray::intersectTriangle(const Triangle& triangle, glm::vec3& intersection) c
 
 	float t = (d - glm::dot(n, origin)) / glm::dot(n,dir);
 
-	//if t is negative, ray is going away from triangle
-	if(t < 0){
+	//if t is negative, ray is going away from triangle 
+	//AND, if ray origin is very close to triangle it hits, pretend it didn't hit it
+	if(t <= FACE_BIAS){
 		return false;
 	}
 
 	//calclate intersection position
 	glm::vec3 Q = origin + t * dir;
 
+    
 	//run through conclusive cases of intersection point out of triangle
 	if(glm::dot(glm::cross(triangle.v2->position - triangle.v1->position, Q - triangle.v1->position), n) < -EDGE_BIAS){
 		return false;

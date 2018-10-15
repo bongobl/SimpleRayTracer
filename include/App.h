@@ -19,7 +19,7 @@
 const int OUTPUT_WIDTH = 1280;
 const int OUTPUT_HEIGHT = 720;
 const int NUM_THREADS = 90;
-const int MAX_NUM_RAY_BOUNCES = 2;
+const int MAX_NUM_RAY_BOUNCES = 3;
 
 class App{
 
@@ -48,5 +48,4 @@ private:
 	void renderRow(int yVal);
 
 	glm::vec3 getColorFromScene(Ray ray, int numBounces);
-	glm::vec3 refractedColor(Ray ray);
 };
