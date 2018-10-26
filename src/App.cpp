@@ -26,13 +26,13 @@ void App::init() {
 	basicMaterial.reflectNewRay = true;
 	basicMaterial.refractNewRay = true;
 	basicMaterial.refractiveIndex = 1.03f;
-	basicMaterial.reflectToRefractParam = 0.7f;
+	basicMaterial.reflectToRefractParam = 0.4f;
 
 	//assign material to sphere
 	sphere.material = basicMaterial;
 
 	//define ico material
-	ico.material.color = glm::vec3(0,1,1);
+	ico.material.color = glm::vec3(1,1,0.5f);
 
 	//enter all models
 	allModels.push_back(&sphere);
@@ -40,12 +40,12 @@ void App::init() {
 
 	//transform models
 	sphere.setScale(glm::vec3(1.5f,1.5f,1.5f));
-	sphere.setPosition(glm::vec3(-50,0,0));
+	//sphere.setPosition(glm::vec3(-50,0,0));
 	ico.setScale(glm::vec3(1.2f,1.2f,1.2f));
-	ico.setPosition(glm::vec3(6,100,-500));
+	//ico.setPosition(glm::vec3(6,100,-500));
 
 	//define light
-	directionalLight.setDirection(glm::vec3(0.5f,-1,-1));
+	directionalLight.setDirection(glm::vec3(-0.5f,-1,-1));
 
 }
 
@@ -100,7 +100,7 @@ void App::renderRow(int yVal){
 		Ray rayFromCamera = Camera::getRay(x, yVal);
 
 		//fire ray into scene and get final pixel color
-		glm::vec3 pixelColor = getColorFromScene(rayFromCamera, 0);
+		glm::vec3 pixelColor = getColorFromScene(rayFromCamera);
 
 		//set pixel in output image to that color
 		outputImage.setPixel(x, yVal, pixelColor);
@@ -110,10 +110,10 @@ void App::renderRow(int yVal){
 
 }//End render row	
 
-glm::vec3 App::getColorFromScene(Ray ray, int numBounces) {
+glm::vec3 App::getColorFromScene(Ray ray) {
 
 	//base case, max num bounces, just sample environment map
-	if(numBounces >= MAX_NUM_RAY_BOUNCES){
+	if(ray.timesBounced >= MAX_NUM_RAY_BOUNCES){
 		return environmentMap.sample(ray.direction);
 	}
 
@@ -130,10 +130,24 @@ glm::vec3 App::getColorFromScene(Ray ray, int numBounces) {
 		//get current model material
 		Material currMaterial = currModel->material;
 
-		//sample surface texture
-		glm::vec3 surfaceTextureColor = glm::vec3(1, 1, 1) - (currMaterial.surfaceTextureStrength *
-			(glm::vec3(1, 1, 1) - currMaterial.surfaceTexture.sample(fragTexCoord)));
-
+		
+		//get color from reflected ray
+		glm::vec3 refractionColor;
+		if(currMaterial.refractNewRay){
+				
+			Ray refractedRay;
+			refractedRay.origin = fragPosition;
+			refractedRay.direction = RenderUtils::refract(ray.direction, fragNormal, 1, currMaterial.refractiveIndex);
+			refractedRay.currMaterial = currMaterial;
+			refractedRay.timesBounced = ray.timesBounced + 1;
+			refractionColor = getColorFromScene(refractedRay);
+			
+		}
+		
+		//if ray intersects from back face of triangle, return pure refractive color
+		if(glm::dot(fragNormal,ray.direction) > 0){
+			return refractionColor;
+		}
 
 		//get color from reflected ray
 		glm::vec3 colorFromReflectedRay =  glm::vec3(1,1,1);
@@ -142,32 +156,17 @@ glm::vec3 App::getColorFromScene(Ray ray, int numBounces) {
 			Ray reflectedRay;
 			reflectedRay.origin = fragPosition;
 			reflectedRay.direction = glm::reflect(ray.direction, fragNormal);
-			colorFromReflectedRay = getColorFromScene(reflectedRay, numBounces + 1);
+			reflectedRay.currMaterial = currMaterial;
+			reflectedRay.timesBounced = ray.timesBounced + 1;
+			colorFromReflectedRay = getColorFromScene(reflectedRay);
 			
 		}
 
-		//get color from reflected ray
-		//NOTE: Hard-coded for 2 bounces. Only works when models are not intersecting
-		glm::vec3 refractionColor;
-		if(currMaterial.refractNewRay){
-						
-			glm::vec3 oppFragPosition;
-			glm::vec2 oppFragTexCoord;
-			glm::vec3 oppFragNormal;
-			Model* oppModel = NULL;
+		//sample surface texture
+		glm::vec3 surfaceTextureColor = glm::vec3(1, 1, 1) - (currMaterial.surfaceTextureStrength *
+			(glm::vec3(1, 1, 1) - currMaterial.surfaceTexture.sample(fragTexCoord)));
 
-			Ray refractedRay;
-			refractedRay.origin = fragPosition;
-			refractedRay.direction = RenderUtils::refract(ray.direction, fragNormal, 1, currMaterial.refractiveIndex);
 
-			//go out model (theoretically, if statement should always be true)
-			if(refractedRay.intersectMesh(allModels, oppFragPosition, oppFragTexCoord, oppFragNormal, oppModel)){
-				refractedRay.origin = oppFragPosition;
-				refractedRay.direction = RenderUtils::refract(refractedRay.direction, oppFragNormal, 1, currMaterial.refractiveIndex);
-			}
-			refractionColor = getColorFromScene(refractedRay, numBounces + 1);
-			
-		}
 		
 
 		//calculate diffuse
@@ -203,13 +202,11 @@ glm::vec3 App::getColorFromScene(Ray ray, int numBounces) {
 		//lerp between reflectivness and refractivness
 		glm::vec3 finalColor = currMaterial.color * ((1 - refLerp) * totalReflectionColor + (refLerp)* refractionColor);
 
-		//set image pixel value
-		
+		//return color for this ray
 		return finalColor;
 
-	}
-	else {
-
-		return environmentMap.sample(ray.direction);
-	}
+	}//End Ray Intersect Mesh
+	
+	//Ray Doesn't hit any mesh, sample environment map
+	return environmentMap.sample(ray.direction);
 }

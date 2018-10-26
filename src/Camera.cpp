@@ -2,7 +2,7 @@
 #include "../include/App.h"
 
 //init static camera fields
-glm::vec3 Camera::position = glm::vec3(150, -75, 600);
+glm::vec3 Camera::position = glm::vec3(120, -60, 500);
 glm::mat4 Camera::orientation = glm::inverse(glm::lookAt(glm::vec3(0, 0, 0), -1.0f * position, glm::vec3(0, 1, 0)));
 int Camera::projectionMode = PERSPECTIVE;
 float Camera::fieldOfView = glm::radians(30.0f);

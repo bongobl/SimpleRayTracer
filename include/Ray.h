@@ -2,14 +2,20 @@
 
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
+#include <stack>
 #include "Triangle.h"
 #include "Model.h"
+#include "Material.h"
 struct Ray{
 
 	glm::vec3 origin;
-
 	glm::vec3 direction;	//ray's direction doesn't need to be normalized since its lendth doesn't matter
+
+	//scene info
+	int timesBounced;
+	Material currMaterial;
+	stack<Material> prevMaterials;
+
 public:
 
 	Ray();

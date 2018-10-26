@@ -32,4 +32,6 @@ struct Material{
 
 	Material();
 
+	static Material Vacuum();
+
 };
