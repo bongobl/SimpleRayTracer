@@ -136,7 +136,7 @@ glm::vec3 Image::sample(glm::vec2 param) const{
 	int y_coord = (int)((1 - param.y) * height);
 
 	
-	//bounds checking
+	//bounds checking (can't use setPixel if in read mode)
 	if (x_coord >= width)
 		x_coord = width - 1;
 	if (y_coord >= height)

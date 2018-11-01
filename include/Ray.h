@@ -13,8 +13,7 @@ struct Ray{
 
 	//scene info
 	int timesBounced;
-	Material currMaterial;
-	stack<Material> prevMaterials;
+
 
 public:
 

@@ -5,6 +5,9 @@ Material::Material(){
 	//overall material's color
 	color = glm::vec3(1, 1, 1);
 
+	//internal color
+	internalColor = glm::vec3(1,1,1);
+
 	//phone reflection
 	diffuse = glm::vec3(1,1,1);
 	specular = glm::vec3(1,1,1);
@@ -15,22 +18,12 @@ Material::Material(){
 
 	//reflect new ray
 	reflectNewRay = false;
-	reflectRayStrength = 1.0f;
 
 	//Refract New Rays
 	refractNewRay = false;
 	refractiveIndex = 1.0f;
+	totalOpaqueDistance = 100.0f;	//not used yet
 
 	//Blend all reflect/refract
 	reflectToRefractParam = 0.0f;
-}
-
-Material Material::Vacuum(){
-	Material m;
-
-	//flag to detect if it is vacuum material
-	m.color = glm::vec3(-1,-1,-1);
-	m.refractiveIndex = 1;
-
-	return m;
 }

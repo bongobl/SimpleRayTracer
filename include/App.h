@@ -16,8 +16,8 @@
 #include "Camera.h"
 #include "RenderUtils.h"
 
-const int OUTPUT_WIDTH = 1280 * 1.5;
-const int OUTPUT_HEIGHT = 720 * 1.5;
+const int OUTPUT_WIDTH = 1280;
+const int OUTPUT_HEIGHT = 720;
 const int NUM_THREADS = 90;
 const int MAX_NUM_RAY_BOUNCES = 4;
 
@@ -47,5 +47,5 @@ private:
 	void threadTask(int startRow);
 	void renderRow(int yVal);
 
-	glm::vec3 getColorFromScene(Ray ray);
+	glm::vec3 getColorFromScene(const Ray ray, float &distToMesh);
 };

@@ -9,6 +9,9 @@ struct Material{
 	//overall material's color
 	glm::vec3 color;
 
+	//internal color
+	glm::vec3 internalColor;
+
 	//phong reflection
 	glm::vec3 diffuse;
 	glm::vec3 specular;
@@ -20,18 +23,15 @@ struct Material{
 
 	//Reflect New Rays
 	bool reflectNewRay;
-	float reflectRayStrength;
 
 	//Refract New Rays
 	bool refractNewRay;
 	float refractiveIndex;
-	
+	float totalOpaqueDistance;
 	
 	//Blend all reflect/refract
 	float reflectToRefractParam;
 
 	Material();
-
-	static Material Vacuum();
 
 };

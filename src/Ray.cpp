@@ -3,10 +3,10 @@
 #include "../include/Ray.h"
 
 Ray::Ray(): origin(glm::vec3(0,0,0)), direction(glm::vec3(0,0,-1)), timesBounced(0) {
-	currMaterial = Material::Vacuum();
+
 }
 Ray::Ray(glm::vec3 origin_, glm::vec3 direction_) : origin(origin_), direction(direction_), timesBounced(0) {
-	currMaterial = Material::Vacuum();
+
 }
 Ray::~Ray(){
 

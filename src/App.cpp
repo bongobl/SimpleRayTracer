@@ -32,7 +32,7 @@ void App::init() {
 	sphere.material = basicMaterial;
 
 	//define ico material
-	ico.material.color = glm::vec3(1,1,0.5f);
+	ico.material.color = glm::vec3(0.5f,1,1);
 
 	//enter all models
 	allModels.push_back(&sphere);
@@ -40,7 +40,7 @@ void App::init() {
 
 	//transform models
 	sphere.setScale(glm::vec3(1.5f,1.5f,1.5f));
-	//sphere.setPosition(glm::vec3(-50,0,0));
+	//sphere.setPosition(glm::vec3(0,0,-500));
 	ico.setScale(glm::vec3(1.2f,1.2f,1.2f));
 	//ico.setPosition(glm::vec3(6,100,-500));
 
@@ -93,24 +93,28 @@ void App::threadTask(int startRow){
 }
 void App::renderRow(int yVal){
 
-
+	//iterate through entire row
 	for (int x = 0; x < OUTPUT_WIDTH; ++x) {
 
 		//get ray from camera based on current pixel
 		Ray rayFromCamera = Camera::getRay(x, yVal);
 
+		//store distance from ray to mesh
+		float distanceToMesh;
+
 		//fire ray into scene and get final pixel color
-		glm::vec3 pixelColor = getColorFromScene(rayFromCamera);
+		glm::vec3 pixelColor = getColorFromScene(rayFromCamera, distanceToMesh);
 
 		//set pixel in output image to that color
 		outputImage.setPixel(x, yVal, pixelColor);
+
 
 	}//For Each Pixel
 
 
 }//End render row	
 
-glm::vec3 App::getColorFromScene(Ray ray) {
+glm::vec3 App::getColorFromScene(const Ray ray, float &distToMesh) {
 
 	//base case, max num bounces, just sample environment map
 	if(ray.timesBounced >= MAX_NUM_RAY_BOUNCES){
@@ -126,6 +130,11 @@ glm::vec3 App::getColorFromScene(Ray ray) {
 	//fire ray into scene to find color for pixel
 	if (ray.intersectMesh(allModels, fragPosition, fragTexCoord, fragNormal, currModel)) {
 
+		//calc distance from ray origin to mesh
+		distToMesh = glm::length(ray.origin - fragPosition);
+
+		//for recursive rays
+		float distFromMesh;
 
 		//get current model material
 		Material currMaterial = currModel->material;
@@ -138,9 +147,8 @@ glm::vec3 App::getColorFromScene(Ray ray) {
 			Ray refractedRay;
 			refractedRay.origin = fragPosition;
 			refractedRay.direction = RenderUtils::refract(ray.direction, fragNormal, 1, currMaterial.refractiveIndex);
-			refractedRay.currMaterial = currMaterial;
 			refractedRay.timesBounced = ray.timesBounced + 1;
-			refractionColor = getColorFromScene(refractedRay);
+			refractionColor = getColorFromScene(refractedRay, distFromMesh);
 			
 		}
 		
@@ -156,9 +164,8 @@ glm::vec3 App::getColorFromScene(Ray ray) {
 			Ray reflectedRay;
 			reflectedRay.origin = fragPosition;
 			reflectedRay.direction = glm::reflect(ray.direction, fragNormal);
-			reflectedRay.currMaterial = currMaterial;
 			reflectedRay.timesBounced = ray.timesBounced + 1;
-			colorFromReflectedRay = getColorFromScene(reflectedRay);
+			colorFromReflectedRay = getColorFromScene(reflectedRay, distFromMesh);
 			
 		}
 
@@ -168,7 +175,6 @@ glm::vec3 App::getColorFromScene(Ray ray) {
 
 
 		
-
 		//calculate diffuse
 		glm::vec3 diffuseComponent = max(glm::dot(fragNormal, -1.0f * directionalLight.getDirection()), 0.0f) * currMaterial.diffuse;
 
@@ -207,6 +213,7 @@ glm::vec3 App::getColorFromScene(Ray ray) {
 
 	}//End Ray Intersect Mesh
 	
+	distToMesh = -1;
 	//Ray Doesn't hit any mesh, sample environment map
 	return environmentMap.sample(ray.direction);
 }
