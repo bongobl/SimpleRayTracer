@@ -62,9 +62,9 @@ bool Ray::intersectTriangle(const Triangle& triangle, glm::vec3& intersection) c
 
 	//CODE FOR BACKFACE CULLING, TOGGLE AT WILL
 	//if ray and triangle normal point in roughly same direction, they don't intersect
-	//if(glm::dot(triangle.getFaceNormal(), direction) > 0){
-	//	return false;
-	//}
+	/*if(glm::dot(triangle.getFaceNormal(), direction) > 0){
+		return false;
+	}*/
 
 	glm::vec3 n =  triangle.getFaceNormal();
 	glm::vec3 dir = glm::normalize(direction);

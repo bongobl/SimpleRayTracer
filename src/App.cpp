@@ -1,6 +1,6 @@
 #include "../include/App.h"
 
-App::App() :	sphere("resources/ObjModels/sphere.obj"),
+App::App() :	cube("resources/ObjModels/FilletCube.obj"),
 				ico("resources/ObjModels/ico.obj")
 {
 	//create output image texture
@@ -25,24 +25,23 @@ void App::init() {
 	basicMaterial.color = glm::vec3(1,1,1);
 	basicMaterial.reflectNewRay = true;
 	basicMaterial.refractNewRay = true;
-	basicMaterial.refractiveIndex = 1.03f;
-	basicMaterial.reflectToRefractParam = 0.4f;
+	basicMaterial.refractiveIndex = 1.08f;
+	basicMaterial.reflectToRefractParam = 0.5f;
+	basicMaterial.internalColor = glm::vec3(0,1,0);
 
 	//assign material to sphere
-	sphere.material = basicMaterial;
+	ico.material = basicMaterial;
 
 	//define ico material
-	ico.material.color = glm::vec3(0.5f,1,1);
+	cube.material.color = glm::vec3(0.7f,0,0.7f);
 
 	//enter all models
-	allModels.push_back(&sphere);
+	allModels.push_back(&cube);
 	allModels.push_back(&ico);
 
 	//transform models
-	sphere.setScale(glm::vec3(1.5f,1.5f,1.5f));
-	//sphere.setPosition(glm::vec3(0,0,-500));
-	ico.setScale(glm::vec3(1.2f,1.2f,1.2f));
-	//ico.setPosition(glm::vec3(6,100,-500));
+	cube.setScale(glm::vec3(0.56f,0.56f,0.56f));
+	ico.setScale(glm::vec3(1.8f,1.8f,1.8f));
 
 	//define light
 	directionalLight.setDirection(glm::vec3(-0.5f,-1,-1));
@@ -78,6 +77,7 @@ void App::exportImage(std::string outputFileName) {
 
 //Private Helpers
 void App::renderMesh() {
+
 	std::vector<std::thread> threads;
 	for (unsigned int i = 0; i < NUM_THREADS; ++i) {
 		threads.push_back(std::thread(&App::threadTask, this, i));
@@ -149,6 +149,13 @@ glm::vec3 App::getColorFromScene(const Ray ray, float &distToMesh) {
 			refractedRay.direction = RenderUtils::refract(ray.direction, fragNormal, 1, currMaterial.refractiveIndex);
 			refractedRay.timesBounced = ray.timesBounced + 1;
 			refractionColor = getColorFromScene(refractedRay, distFromMesh);
+
+
+			//TOGGLE AT WILL: Longer internal rays will lerp more towards material internal color
+			if(glm::dot(fragNormal,ray.direction) < 0){
+				float param = min(1.0f,distFromMesh / currMaterial.totalOpaqueDistance);
+				refractionColor = (1 - param) * refractionColor + param * currMaterial.internalColor;
+			} 
 			
 		}
 		

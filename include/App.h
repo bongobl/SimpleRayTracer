@@ -16,14 +16,14 @@
 #include "Camera.h"
 #include "RenderUtils.h"
 
-const int OUTPUT_WIDTH = 1280;
-const int OUTPUT_HEIGHT = 720;
+const int OUTPUT_WIDTH = 720 * 1.5f;
+const int OUTPUT_HEIGHT = 720 * 1.5f;
 const int NUM_THREADS = 90;
 const int MAX_NUM_RAY_BOUNCES = 4;
 
 class App{
 
-	Model sphere;
+	Model cube;
 	Model ico;
 
 	Image outputImage;

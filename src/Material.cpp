@@ -22,7 +22,7 @@ Material::Material(){
 	//Refract New Rays
 	refractNewRay = false;
 	refractiveIndex = 1.0f;
-	totalOpaqueDistance = 100.0f;	//not used yet
+	totalOpaqueDistance = 600.0f;	//not used yet
 
 	//Blend all reflect/refract
 	reflectToRefractParam = 0.0f;
