@@ -118,6 +118,7 @@ glm::vec3 App::getColorFromScene(const Ray ray, float &distToMesh) {
 
 	//base case, max num bounces, just sample environment map
 	if(ray.timesBounced >= MAX_NUM_RAY_BOUNCES){
+		distToMesh = -1;
 		return environmentMap.sample(ray.direction);
 	}
 
@@ -152,7 +153,7 @@ glm::vec3 App::getColorFromScene(const Ray ray, float &distToMesh) {
 
 
 			//TOGGLE AT WILL: Longer internal rays will lerp more towards material internal color
-			if(glm::dot(fragNormal,ray.direction) < 0){
+			if(glm::dot(fragNormal,ray.direction) < 0 && distFromMesh != -1){
 				float param = min(1.0f,distFromMesh / currMaterial.totalOpaqueDistance);
 				refractionColor = (1 - param) * refractionColor + param * currMaterial.internalColor;
 			} 
