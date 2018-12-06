@@ -1,6 +1,8 @@
 #include <cstdlib>
 #include "../include/Model.h"
 
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tiny_obj_loader.h>
 
 Model::Model(string model_filename){
 

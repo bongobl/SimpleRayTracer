@@ -99,11 +99,8 @@ void App::renderRow(int yVal){
 		//get ray from camera based on current pixel
 		Ray rayFromCamera = Camera::getRay(x, yVal);
 
-		//store distance from ray to mesh
-		float distanceToMesh;
-
 		//fire ray into scene and get final pixel color
-		glm::vec3 pixelColor = getColorFromScene(rayFromCamera, distanceToMesh);
+		glm::vec3 pixelColor = getColorFromScene(rayFromCamera);
 
 		//set pixel in output image to that color
 		outputImage.setPixel(x, yVal, pixelColor);
@@ -114,11 +111,10 @@ void App::renderRow(int yVal){
 
 }//End render row	
 
-glm::vec3 App::getColorFromScene(const Ray ray, float &distToMesh) {
+glm::vec3 App::getColorFromScene(const Ray ray) {
 
 	//base case, max num bounces, just sample environment map
 	if(ray.timesBounced >= MAX_NUM_RAY_BOUNCES){
-		distToMesh = -1;
 		return environmentMap.sample(ray.direction);
 	}
 
@@ -132,10 +128,7 @@ glm::vec3 App::getColorFromScene(const Ray ray, float &distToMesh) {
 	if (ray.intersectMesh(allModels, fragPosition, fragTexCoord, fragNormal, currModel)) {
 
 		//calc distance from ray origin to mesh
-		distToMesh = glm::length(ray.origin - fragPosition);
-
-		//for recursive rays
-		float distFromMesh;
+		float distToMesh = glm::length(ray.origin - fragPosition);
 
 		//get current model material
 		Material currMaterial = currModel->material;
@@ -149,31 +142,29 @@ glm::vec3 App::getColorFromScene(const Ray ray, float &distToMesh) {
 			refractedRay.origin = fragPosition;
 			refractedRay.direction = RenderUtils::refract(ray.direction, fragNormal, 1, currMaterial.refractiveIndex);
 			refractedRay.timesBounced = ray.timesBounced + 1;
-			refractionColor = getColorFromScene(refractedRay, distFromMesh);
-
-
-			//TOGGLE AT WILL: Longer internal rays will lerp more towards material internal color
-			if(glm::dot(fragNormal,ray.direction) < 0 && distFromMesh != -1){
-				float param = min(1.0f,distFromMesh / currMaterial.totalOpaqueDistance);
-				refractionColor = (1 - param) * refractionColor + param * currMaterial.internalColor;
-			} 
+			refractionColor = getColorFromScene(refractedRay);
 			
 		}
 		
 		//if ray intersects from back face of triangle, return pure refractive color
 		if(glm::dot(fragNormal,ray.direction) > 0){
+
+			//TOGGLE AT WILL: Longer internal rays will lerp more towards material internal color
+			float param = min(1.0f,distToMesh / currMaterial.totalOpaqueDistance);
+			refractionColor = (1 - param) * refractionColor + param * currMaterial.internalColor;
 			return refractionColor;
 		}
 
 		//get color from reflected ray
 		glm::vec3 colorFromReflectedRay =  glm::vec3(1,1,1);
+
 		if(currMaterial.reflectNewRay){
 
 			Ray reflectedRay;
 			reflectedRay.origin = fragPosition;
 			reflectedRay.direction = glm::reflect(ray.direction, fragNormal);
 			reflectedRay.timesBounced = ray.timesBounced + 1;
-			colorFromReflectedRay = getColorFromScene(reflectedRay, distFromMesh);
+			colorFromReflectedRay = getColorFromScene(reflectedRay);
 			
 		}
 
@@ -221,7 +212,6 @@ glm::vec3 App::getColorFromScene(const Ray ray, float &distToMesh) {
 
 	}//End Ray Intersect Mesh
 	
-	distToMesh = -1;
 	//Ray Doesn't hit any mesh, sample environment map
 	return environmentMap.sample(ray.direction);
 }

@@ -47,5 +47,5 @@ private:
 	void threadTask(int startRow);
 	void renderRow(int yVal);
 
-	glm::vec3 getColorFromScene(const Ray ray, float &distToMesh);
+	glm::vec3 getColorFromScene(const Ray ray);
 };
