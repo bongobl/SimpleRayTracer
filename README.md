@@ -1,3 +1,4 @@
+This is a simple ray tracer I wrote in C++
 
 To build this project, first run...
 

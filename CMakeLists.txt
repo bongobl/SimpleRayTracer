@@ -6,23 +6,23 @@ include("external/stb.cmake")
 include("external/tinyobjloader.cmake")
 include("external/glm.cmake")
 
-set(INCLUDE_DIRECTORY "${CMAKE_SOURCE_DIR}/include/")
+set(PROJECT_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include/")
 set(INCLUDE_FILES
-	"${INCLUDE_DIRECTORY}/Image.h"
-	"${INCLUDE_DIRECTORY}/App.h"
-	"${INCLUDE_DIRECTORY}/Model.h"
-	"${INCLUDE_DIRECTORY}/Ray.h"
-	"${INCLUDE_DIRECTORY}/Triangle.h"
-	"${INCLUDE_DIRECTORY}/Vertex.h"
-	"${INCLUDE_DIRECTORY}/Material.h"
-	"${INCLUDE_DIRECTORY}/CubeMap.h"
-	"${INCLUDE_DIRECTORY}/Light.h"
-	"${INCLUDE_DIRECTORY}/Camera.h"
-	"${INCLUDE_DIRECTORY}/RenderUtils.h"
+	"${PROJECT_INCLUDE_DIR}/Image.h"
+	"${PROJECT_INCLUDE_DIR}/App.h"
+	"${PROJECT_INCLUDE_DIR}/Model.h"
+	"${PROJECT_INCLUDE_DIR}/Ray.h"
+	"${PROJECT_INCLUDE_DIR}/Triangle.h"
+	"${PROJECT_INCLUDE_DIR}/Vertex.h"
+	"${PROJECT_INCLUDE_DIR}/Material.h"
+	"${PROJECT_INCLUDE_DIR}/CubeMap.h"
+	"${PROJECT_INCLUDE_DIR}/Light.h"
+	"${PROJECT_INCLUDE_DIR}/Camera.h"
+	"${PROJECT_INCLUDE_DIR}/RenderUtils.h"
 )
 
-set(INCLUDE_DIRECTORIES
-    "${INCLUDE_DIRECTORY}"
+set(ALL_INCLUDE_DIRECTORIES
+    "${PROJECT_INCLUDE_DIR}"
     "${STB_INCLUDE_DIRECTORY}"
     "${TINYOBJLOADER_INCLUDE_DIRECTORY}"
     "${GLM_INCLUDE_DIRECTORY}"
@@ -51,7 +51,7 @@ set(RESOURCE_DIRECTORIES
 )
 
 add_executable(SimpleRayTracer "${INCLUDE_FILES}" "${SOURCE_FILES}")
-target_include_directories(SimpleRayTracer PRIVATE "${INCLUDE_DIRECTORIES}")
+target_include_directories(SimpleRayTracer PRIVATE "${ALL_INCLUDE_DIRECTORIES}")
 
 
 foreach(RESOURCE_DIRECTORY ${RESOURCE_DIRECTORIES})
