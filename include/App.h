@@ -16,10 +16,10 @@
 #include "Camera.h"
 #include "RenderUtils.h"
 
-const int OUTPUT_WIDTH = 720 * 1.5f;
-const int OUTPUT_HEIGHT = 720 * 1.5f;
-const int NUM_THREADS = 90;
-const int MAX_NUM_RAY_BOUNCES = 4;
+constexpr int OUTPUT_WIDTH = static_cast<int>(720 * 1.5f);
+constexpr int OUTPUT_HEIGHT = static_cast<int>(720 * 1.5f);
+constexpr int NUM_THREADS = OUTPUT_HEIGHT;
+constexpr int MAX_NUM_RAY_BOUNCES = 4;
 
 class App{
 

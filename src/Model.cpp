@@ -53,8 +53,8 @@ Model::Model(string model_filename){
 
     		//if vertex is new, add to map with index being current size of vertices array
     		if(uniqueVertices.count(tentative) == 0){
-    			uniqueVertices[tentative] = vertices.size();
-    			indexBuffer.push_back(vertices.size());
+    			uniqueVertices[tentative] = static_cast<unsigned int>(vertices.size());
+    			indexBuffer.push_back(static_cast<unsigned int>(vertices.size()));
     			vertices.push_back(new Vertex(tentative));
 
     		}else{

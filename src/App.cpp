@@ -87,9 +87,7 @@ void App::renderMesh() {
 	}
 }
 void App::threadTask(int startRow){
-	for (int currRow = startRow; currRow < OUTPUT_HEIGHT; currRow += NUM_THREADS) {
-		renderRow(currRow);
-	}
+	renderRow(startRow);
 }
 void App::renderRow(int yVal){
 
